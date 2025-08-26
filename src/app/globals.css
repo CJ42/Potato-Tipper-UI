@@ -6,7 +6,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  --lukso-pink: #f6025b;
+  --lukso-pink: #4a7c59;
 }
 
 html,
@@ -16,15 +16,31 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
+  /* background: linear-gradient(
       to bottom,
-      #fff0f8,
+      #7a5230,
       rgb(var(--background-end-rgb))
     )
-    rgb(var(--background-start-rgb));
+    rgb(var(--background-start-rgb)); */
+  background-image: url('/potato-garden-bg.webp'); /* Replace with the correct file name */
+
+  /* Add a semi-transparent overlay */
+  position: relative; /* Ensure content can stack over the background */
   background-size: cover;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-position: center; /* Centers the image */
+  background-attachment: scroll;
+}
+
+body::before {
+  content: ''; /* Add an empty content block */
+  position: absolute; /* Position relative to the parent */
+  /* top: 0; */
+  /* left: 0; */
+  width: 100%; /* Covers the whole parent */
+  height: 100%; /* Covers the whole parent */
+  background-color: rgba(0, 0, 0, 0.5); /* Set overlay color and opacity */
+  z-index: -1; /* Ensures it stays behind the content */
 }
 
 .main-content {
@@ -50,7 +66,7 @@ body {
 }
 
 .bg-lukso-pink:hover {
-  background-color: #ef2b6c;
+  background-color: #e3a754;
 }
 
 select:focus {
@@ -58,4 +74,48 @@ select:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
   box-shadow: 0 0 0 2px var(--lukso-pink);
+}
+
+.bg-blossom-white {
+  background-color: #f8f5e8;
+}
+
+nav {
+  background-color: #d9c2a1;
+}
+
+/* Confetti effect - moved from index.module.css */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Ensure the confetti doesn't block clicks */
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 12px;
+  background: red;
+  opacity: 0.8;
+  transform: rotate(45deg);
+  animation:
+    fall 2s linear infinite,
+    sway 2s ease-in-out infinite;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+@keyframes sway {
+  50% {
+    transform: translateX(50px);
+  }
 }
