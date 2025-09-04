@@ -8,8 +8,12 @@ const CardWithContent: React.FC = () => {
         <code className="font-mono font-bold ml-1">🥔 POTATO Tipper dApp</code>!
       </h1>
       <p className="mb-3">
-        Looking to get more followers? Tired to ask people on Twitter and
-        Telegram to follow your 🆙 on universaleverything.io?
+        Looking to get more followers? Tired to ask people on X and Telegram to
+        follow your 🆙 on{' '}
+        <a href="https://universaleverything.io" target="_blank">
+          universaleverything.io
+        </a>
+        ?
       </p>
       <p className="mb-3">
         We have a solution for you! Incentivize people to follow you by tipping

@@ -5,13 +5,17 @@ import Image from 'next/image';
 // import PotatoTipperNotSetImage from '../../public/images/potato-tipper-not-set.webp';
 import { lsp7DigitalAssetAbi } from '@lukso/lsp7-contracts/abi';
 
-import { useReadContract, useWriteContract } from 'wagmi';
+import {
+  useReadContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from 'wagmi';
 
 import { useEthereum } from '@/contexts/EthereumContext';
 import { abi as profileABI } from '@lukso/universalprofile-contracts/artifacts/UniversalProfile.json';
 
 import styles from './index.module.css';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ethers, parseUnits } from 'ethers';
 import { useAccount } from 'wagmi';
 import {
@@ -29,17 +33,85 @@ export default function Home() {
   // TODO: remove and deprecate
   const { connect, disconnect, account } = useEthereum();
 
-  const { writeContract } = useWriteContract();
+  const { writeContract, data: hash, error, isPending } = useWriteContract();
+
+  // Debug transaction states
+  useEffect(() => {
+    console.log(
+      'Transaction states - hash:',
+      hash,
+      'isPending:',
+      isPending,
+      'error:',
+      error
+    );
+  }, [hash, isPending, error]);
+
+  // Modal state
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
+  const [isPotatoTipperConnected, setIsPotatoTipperConnected] = useState(false);
 
   // -----
 
   const { address } = useAccount();
-  // const result = useReadContract({
-  //   abi: profileABI,
-  //   address: address,
-  //   functionName: 'getData',
-  //   args: [key],
-  // });
+
+  // Check if POTATO Tipper is connected
+  const { key: lsp1DelegateKey } = encodeDataKeysValuesForLSP1Delegate();
+  const potatoTipperData = useReadContract({
+    abi: profileABI,
+    address: address,
+    functionName: 'getData',
+    args: [lsp1DelegateKey],
+    query: {
+      enabled: !!address, // Only run when address is available
+    },
+  });
+
+  // Wait for transaction receipt to refetch data
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    });
+
+  // Update connection status when data changes
+  useEffect(() => {
+    console.log('=== DATA UPDATE DEBUG ===');
+    console.log('Raw data from contract:', potatoTipperData.data);
+    console.log('Data type:', typeof potatoTipperData.data);
+    console.log(
+      'Data length:',
+      typeof potatoTipperData.data === 'string'
+        ? potatoTipperData.data.length
+        : 'N/A'
+    );
+    console.log('Is data truthy:', !!potatoTipperData.data);
+    console.log('Is data not 0x:', potatoTipperData.data !== '0x');
+    console.log(
+      'Current isPotatoTipperConnected state:',
+      isPotatoTipperConnected
+    );
+    console.log('Expected POTATO_TIPPER_ADDRESS:', POTATO_TIPPER_ADDRESS);
+
+    // More robust check for connection status
+    const isConnected =
+      potatoTipperData.data &&
+      potatoTipperData.data !== '0x' &&
+      potatoTipperData.data !==
+        '0x0000000000000000000000000000000000000000000000000000000000000000' &&
+      typeof potatoTipperData.data === 'string' &&
+      potatoTipperData.data.length > 2;
+
+    console.log('Is connected check result:', isConnected);
+
+    if (isConnected) {
+      console.log('✅ Setting isPotatoTipperConnected to true');
+      setIsPotatoTipperConnected(true);
+    } else {
+      console.log('❌ Setting isPotatoTipperConnected to false');
+      setIsPotatoTipperConnected(false);
+    }
+    console.log('=== END DATA UPDATE DEBUG ===');
+  }, [potatoTipperData.data]);
 
   // Step 1: Connect Potato Tipper
   // TODO: debug transaction reverting
@@ -130,6 +202,7 @@ export default function Home() {
     }
   };
 
+  // TODO: move to separate component file
   type BoxProps = {
     emoji: string;
     title: string;
@@ -153,6 +226,37 @@ export default function Home() {
     </button>
   );
 
+  // Modal component
+  // TODO: move to separate component file
+  const Modal = ({
+    isOpen,
+    onClose,
+    children,
+  }: {
+    isOpen: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+  }) => {
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">UP Browser Extension Setup</h2>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+            >
+              ×
+            </button>
+          </div>
+          {children}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <main className="flex flex-col items-center justify-between px-16 pb-4">
       <div className="my-2 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
@@ -172,28 +276,16 @@ export default function Home() {
       </div>
       <div className="rounded-lg border border-red-100 p-5 bg-blossom-white mt-4">
         <h2 className="text-2xl m-5">Setup the POTATO Tipper</h2>
+        {/* <div className="mb-32 grid text-left lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left"></div> */}
         <div className="mb-32 grid text-left lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
           <Box
             emoji="1️⃣"
             title="Update your UP permissions"
             text="This is required so that you can connect the POTATO Tipper to your Universal Profile"
-            onClick={() => {}}
+            onClick={() => setIsPermissionsModalOpen(true)}
           />
-          <div className="opacity-50">
-            <ul>
-              <li>1. Open your UP Browser Extension</li>
-              <li>2. Click on the controllers tab</li>
-              <li>3. click on the UP Browser Extension</li>
-              <li>
-                4. Scroll down and toggle on "Add notifications & automation"
-              </li>
-              <li>5. Click on "Save Changes"</li>
-            </ul>
-          </div>
-        </div>
-        <div className="mb-32 grid text-left lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
           <Box
-            emoji="2️⃣"
+            emoji={isPotatoTipperConnected ? '✅' : '2️⃣'}
             title="Connect the POTATO Tipper"
             text="Connect the POTATO Tipper contract to your Universal Profile. It will react when you receive new followers 📢."
             onClick={connectPotatoTipper}
@@ -210,15 +302,111 @@ export default function Home() {
             text="Set up to how many tokens the tipper can distribute on your behalf. This amount should be topped up regularly."
             onClick={authorizePotatoTipperAsOperator}
           />
+          <div ref={confettiContainerRef} className="confetti-container"></div>
+        </div>
+        <div className="mb-32 text-center">
           <Box
             emoji="🍠"
             title="Happy Tipping!"
             text="You are all set! Feel to configure your tipper, topup overtime and incentivize people to follow you to receive $POTATO tokens 🫡."
             onClick={generateConfetti}
           />
-          <div ref={confettiContainerRef} className="confetti-container"></div>
         </div>
       </div>
+
+      {/* Modal for UP permissions setup */}
+      <Modal
+        isOpen={isPermissionsModalOpen}
+        onClose={() => setIsPermissionsModalOpen(false)}
+      >
+        <div className="space-y-4">
+          <p className="text-gray-700 mb-4">
+            To use the POTATO Tipper, you need to enable specific permissions in
+            your Universal Profile Browser Extension. Follow these steps
+            carefully:
+          </p>
+
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-blue-800 mb-2">
+              Step-by-Step Instructions:
+            </h3>
+            <ol className="list-decimal list-inside space-y-2 text-blue-700">
+              <li>Open your Universal Profile Browser Extension</li>
+              <li>Click on the "Controllers" tab in the extension</li>
+              <li>Click on the "UP Browser Extension" controller</li>
+              <li>
+                Scroll down to find the "Add notifications & automation" option
+              </li>
+              <li>Toggle ON the "Add notifications & automation" setting</li>
+              <li>
+                Click on "Save Changes" + confirm transaction to apply the new
+                permissions
+              </li>
+            </ol>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-gray-800 mb-3">
+              📹 Video Tutorial:
+            </h3>
+            <div className="relative w-full max-w-2xl mx-auto">
+              <video
+                controls
+                muted
+                className="w-full rounded-lg shadow-lg"
+                preload="metadata"
+              >
+                <source src="/add-urd-permissions-video.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-yellow-800 mb-2">
+              ⚠️ Important Notes:
+            </h3>
+            <ul className="list-disc list-inside space-y-1 text-yellow-700">
+              <li>
+                Switching on this permission allows you to{' '}
+                <strong>connect</strong> the POTATO Tipper contract to the
+                notification type <strong>"new follower"</strong>, so that your
+                🆙 can automatically react when it receives new followers.
+              </li>
+              <li>
+                Without this permission, you cannot connect the POTATO tipper
+                contract to your 🆙.
+              </li>
+              <li>
+                <strong>
+                  You can switch off this permission after connecting the POTATO
+                  Tipper for safety .
+                </strong>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-green-800 mb-2">
+              ✅ What happens next:
+            </h3>
+            <p className="text-green-700">
+              Once you've enabled these permissions, you can proceed with
+              connecting the POTATO Tipper to your Universal Profile and setting
+              up your tipping preferences.
+            </p>
+          </div>
+
+          <div className="flex justify-end mt-6">
+            <button
+              onClick={() => setIsPermissionsModalOpen(false)}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* <div className="rounded-lg border border-red-100 p-5 bg-pink-50 mt-4 text-center">
           This application framework was created using Next for React. Visit the
