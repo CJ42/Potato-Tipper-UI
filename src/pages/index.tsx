@@ -276,7 +276,6 @@ export default function Home() {
       </div>
       <div className="rounded-lg border border-red-100 p-5 bg-blossom-white mt-4">
         <h2 className="text-2xl m-5">Setup the POTATO Tipper</h2>
-        {/* <div className="mb-32 grid text-left lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left"></div> */}
         <div className="mb-32 grid text-left lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
           <Box
             emoji="1️⃣"
@@ -304,7 +303,53 @@ export default function Home() {
           />
           <div ref={confettiContainerRef} className="confetti-container"></div>
         </div>
-        <div className="mb-32 text-center">
+        <div className="mb-32 grid text-left lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
+          <div>
+            Permissions:{' '}
+            {/* TODO: add CHECK if UP Browser Extension Main Controller has enough permissions*/}{' '}
+          </div>
+          <div className="mx-5">
+            {/* TODO: add check if the connected address for the LSP1 Delegate connected to the type ID is set correctly or not */}
+            <label className="block mb-2 text-sm text-gray-900">
+              Connected address:
+            </label>
+            <input
+              type="number"
+              id="number-input"
+              aria-describedby="helper-text-explanation"
+              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-green-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="90210"
+              required
+            />
+          </div>
+          <div className="mx-5">
+            <label className="block mb-2 text-sm text-gray-900">
+              Tip amount:
+            </label>
+            <input
+              type="number"
+              id="number-input"
+              aria-describedby="helper-text-explanation"
+              className="bg-[#4a7c59] border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="90210"
+              required
+            />
+          </div>
+          <div className="mx-5">
+            <label className="block mb-2 text-sm text-gray-900">
+              Allocated amount:
+            </label>
+            <input
+              type="number"
+              id="number-input"
+              aria-describedby="helper-text-explanation"
+              className="bg-[#4a7c59] border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="90210"
+              required
+            />
+          </div>
+        </div>
+        <div className="mt-10 text-center">
           <Box
             emoji="🍠"
             title="Happy Tipping!"

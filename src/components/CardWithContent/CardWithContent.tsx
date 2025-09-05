@@ -3,14 +3,19 @@ import React from 'react';
 const CardWithContent: React.FC = () => {
   return (
     <div className="mb-6 mx-3 rounded">
-      <h1 className="mb-3 fixed left-0 top-0 flex w-full justify-center lg:static lg:w-auto lg:rounded-xl lg:p-4 lg:border border-red-100 bg-pink-50 font-mono">
+      <h1 className="mb-3 fixed left-0 top-0 flex w-full justify-center lg:static lg:w-auto lg:rounded-xl lg:p-4 lg:border bg-[#4a7c59] font-mono text-white">
         Welcome to the{' '}
-        <code className="font-mono font-bold ml-1">🥔 POTATO Tipper dApp</code>!
+        <span className="font-mono font-bold ml-2"> 🥔 POTATO Tipper dApp</span>
+        !
       </h1>
       <p className="mb-3">
         Looking to get more followers? Tired to ask people on X and Telegram to
         follow your 🆙 on{' '}
-        <a href="https://universaleverything.io" target="_blank">
+        <a
+          className="font-bold text-[#925648]"
+          href="https://universaleverything.io"
+          target="_blank"
+        >
           universaleverything.io
         </a>
         ?

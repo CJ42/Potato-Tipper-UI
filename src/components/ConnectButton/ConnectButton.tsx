@@ -2,7 +2,6 @@ import Image from 'next/image';
 
 import { useEthereum } from '@/contexts/EthereumContext';
 import { useProfile } from '@/contexts/ProfileContext';
-import styles from './ProfilePreview.module.css';
 
 import identicon from 'ethereum-blockies-base64';
 
@@ -43,7 +42,16 @@ const ConnectButton: React.FC = () => {
           /> // Profile Image
         )}
       </div>
-      <code className="mx-2">{account ? account : 'No account connected'}</code>
+      <code className="mx-2">
+        {(account && (
+          // (profile?.name || account))
+          <>
+            <span className="font-bold mr-3 text-[#925648]">{`@${profile?.name}`}</span>
+            <code className="text-sm">{`${account.slice(0, 7)}...${account.slice(-5)}`}</code>
+          </>
+        )) ||
+          'No account connected'}
+      </code>
       <div style={{ zIndex: 999999999 }}>
         <button
           className="m-2 bg-lukso-pink text-white font-bold py-2 px-4 rounded"
