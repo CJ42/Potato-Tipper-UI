@@ -228,18 +228,18 @@ export default function Home() {
 
   // HoverVideo component
   // TODO: move to separate component file
-  const HoverVideo = ({ 
-    imageSrc, 
-    videoSrc, 
-    alt, 
-    width, 
-    height 
-  }: { 
-    imageSrc: string; 
-    videoSrc: string; 
-    alt: string; 
-    width: string; 
-    height: string; 
+  const HoverVideo = ({
+    imageSrc,
+    videoSrc,
+    alt,
+    width,
+    height,
+  }: {
+    imageSrc: string;
+    videoSrc: string;
+    alt: string;
+    width: string;
+    height: string;
   }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -262,7 +262,7 @@ export default function Home() {
     };
 
     return (
-      <div 
+      <div
         className="relative group cursor-pointer"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => {
@@ -282,9 +282,11 @@ export default function Home() {
           alt={alt}
           className={`transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
         />
-        
+
         {/* Video Overlay */}
-        <div className={`absolute inset-0 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+        <div
+          className={`absolute inset-0 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+        >
           <video
             ref={videoRef}
             src={videoSrc}
@@ -294,17 +296,25 @@ export default function Home() {
             onEnded={handleVideoEnd}
             preload="metadata"
           />
-          
+
           {/* Play/Pause Button Overlay */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="bg-black bg-opacity-50 rounded-full p-4 hover:bg-opacity-70 transition-all duration-200">
               {isPlaying ? (
-                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                <svg
+                  className="w-8 h-8 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
                 </svg>
               ) : (
-                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
+                <svg
+                  className="w-8 h-8 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M8 5v14l11-7z" />
                 </svg>
               )}
             </div>
