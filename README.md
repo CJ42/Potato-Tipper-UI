@@ -21,7 +21,7 @@ More information is available on our 👉 [technical documentation](https://docs
 
 ## Development
 
-Click on the top right button **"use this template"** or clone the repository:
+Clone the repository:
 
 ```bash
 git clone git@github.com:lukso-network/tools-dapp-boilerplate.git
