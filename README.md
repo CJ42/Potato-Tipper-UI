@@ -1,4 +1,4 @@
-# 🏗️ LUKSO dApp Boilerplate
+# POTATO Tipper UI
 
 This repository is a TypeScript/Next.js based open-source framework to build LUKSO dApps with ease.
 
@@ -21,7 +21,7 @@ More information is available on our 👉 [technical documentation](https://docs
 
 ## Development
 
-Clone the repository:
+Click on the top right button **"use this template"** or clone the repository:
 
 ```bash
 git clone git@github.com:lukso-network/tools-dapp-boilerplate.git

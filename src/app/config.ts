@@ -3,8 +3,8 @@
  */
 export const config = {
   metadata: {
-    title: 'LUKSO dApp Boilerplate',
-    description: 'Open Source LUKSO Dev Stack',
+    title: 'POTATO Tipper',
+    description: 'dApp to setup tipping $POTATO tokens on new followers',
     url: 'https://boilerplate.lukso.tech/',
     icon: '/lyx_token_symbol.svg',
   },
