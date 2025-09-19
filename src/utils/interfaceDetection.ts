@@ -1,8 +1,6 @@
 'use client';
 import { ethers } from 'ethers';
 
-import erc165ABI from '@/consts/ERC165ABI.json';
-
 /*
  * Initialize base provider to get current blockchain network
  * The RPC URL can also be passed as string manually, see:
@@ -29,7 +27,31 @@ export async function supportsInterface(
     console.error('Provider not available.');
     return false;
   }
-  const contract = new ethers.Contract(contractAddress, erc165ABI, provider);
+  const contract = new ethers.Contract(
+    contractAddress,
+    [
+      {
+        inputs: [
+          {
+            internalType: 'bytes4',
+            name: 'interfaceId',
+            type: 'bytes4',
+          },
+        ],
+        name: 'supportsInterface',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '',
+            type: 'bool',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+    ],
+    provider
+  );
   try {
     return await contract.supportsInterface(interfaceId);
   } catch (error) {

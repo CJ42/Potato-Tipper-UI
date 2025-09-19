@@ -361,7 +361,7 @@ export default function Home() {
         {/* Banner section for announcement of the announcement of the announcement */}
       </div>
 
-      <div className="rounded-lg border border-red-100 p-5 bg-blossom-white">
+      <div className="rounded-lg border border-red-100 p-5 bg-beige-soil">
         <div className="grid text-center align-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-2 lg:text-left">
           <HoverVideo
             imageSrc="/potato-tipper-chilling.webp"
@@ -373,7 +373,7 @@ export default function Home() {
           <CardWithContent />
         </div>
       </div>
-      <div className="rounded-lg border border-red-100 p-5 bg-blossom-white mt-4">
+      <div className="rounded-lg border border-red-100 p-5 bg-beige-soil mt-4">
         <h2 className="text-2xl m-5">Setup the POTATO Tipper</h2>
         <div className="mb-32 grid text-left lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
           <Box

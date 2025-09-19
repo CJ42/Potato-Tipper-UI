@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-import supportedNetworks from '@/consts/SupportedNetworks.json';
+import { SUPPORTED_NETWORKS } from '@/consts/constants';
 import { useEthereum } from './EthereumContext';
 interface NetworkContextType {
   network: string | null;
@@ -41,7 +41,7 @@ export function NetworkProvider({
 
   // Checks if the given chain ID is in the list of supported networks
   const isNetworkSupported = (chainId: bigint) => {
-    return supportedNetworks.some((net) => BigInt(net.chainId) === chainId);
+    return SUPPORTED_NETWORKS.some((net) => BigInt(net.chainId) === chainId);
   };
 
   // Initialize the network state and listen for chain changes
@@ -53,7 +53,7 @@ export function NetworkProvider({
     if (provider) {
       provider.getNetwork().then((net) => {
         if (isNetworkSupported(net.chainId)) {
-          const networkDetails = supportedNetworks.find(
+          const networkDetails = SUPPORTED_NETWORKS.find(
             (network) => BigInt(network.chainId) === net.chainId
           );
           if (networkDetails) {
@@ -67,7 +67,7 @@ export function NetworkProvider({
 
       providerObject.on('chainChanged', (chainId: bigint) => {
         if (isNetworkSupported(chainId)) {
-          const networkDetails = supportedNetworks.find(
+          const networkDetails = SUPPORTED_NETWORKS.find(
             (network) => BigInt(network.chainId) === chainId
           );
           if (networkDetails) setNetwork(networkDetails.name);
@@ -88,7 +88,7 @@ export function NetworkProvider({
      */
     if (provider) {
       // Seach for supported network ID
-      const networkDetails = supportedNetworks.find(
+      const networkDetails = SUPPORTED_NETWORKS.find(
         (net) => net.chainId === networkId
       );
 

@@ -54,7 +54,7 @@ const ConnectButton: React.FC = () => {
       </code>
       <div style={{ zIndex: 999999999 }}>
         <button
-          className="m-2 bg-lukso-pink text-white font-bold py-2 px-4 rounded"
+          className="m-2 bg-green-garden text-white font-bold py-2 px-4 rounded"
           onClick={account ? disconnect : connect}
         >
           {account ? 'Disconnect' : 'Connect'}

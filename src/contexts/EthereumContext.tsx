@@ -14,7 +14,7 @@ import { ConnectModalOptions } from '@web3-onboard/core/dist/types';
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
 import luksoModule from '@lukso/web3-onboard-config';
 
-import supportedNetworks from '@/consts/SupportedNetworks.json';
+import { SUPPORTED_NETWORKS } from '@/consts/constants';
 import { config } from '@/app/config';
 
 // All supported provider methods
@@ -69,10 +69,9 @@ const onboardAppMetadata = {
 };
 
 /**
- * Web3-Onboard: Set up the supported networks with strict
- * properties based on the supportedNetworks.json
+ * Web3-Onboard: Set up the supported networks with strict properties
  */
-const onboardSupportedChains = supportedNetworks.map((network) => ({
+const onboardSupportedChains = SUPPORTED_NETWORKS.map((network) => ({
   id: parseInt(network.chainId, 10),
   token: network.token,
   label: network.name,
@@ -107,7 +106,7 @@ const walletConnectConfig = defaultConfig({
 });
 
 // Wallet Connect: Chain Data
-const walletConnectSupportedChains = supportedNetworks.map((network) => ({
+const walletConnectSupportedChains = SUPPORTED_NETWORKS.map((network) => ({
   chainId: parseInt(network.chainId, 10),
   name: network.name,
   currency: network.token,

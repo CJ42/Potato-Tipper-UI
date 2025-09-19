@@ -9,7 +9,7 @@ import React, {
 import lsp3ProfileSchema from '@erc725/erc725.js/schemas/LSP3ProfileMetadata.json' assert { type: 'json' };
 import { ERC725, ERC725JSONSchema } from '@erc725/erc725.js';
 
-import supportedNetworks from '@/consts/SupportedNetworks.json';
+import { SUPPORTED_NETWORKS } from '@/consts/constants';
 import { useEthereum } from './EthereumContext';
 import { useNetwork } from './NetworkContext';
 
@@ -38,13 +38,11 @@ interface Image {
 interface ProfileContextType {
   profile: Profile | null;
   setProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
-  issuedAssets: string[];
 }
 
 const initialProfileContextValue: ProfileContextType = {
   profile: null,
   setProfile: () => {},
-  issuedAssets: [],
 };
 
 // Set up the empty React context
@@ -74,7 +72,6 @@ export function ProfileProvider({
   const { account } = useEthereum();
   const { network } = useNetwork();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [issuedAssets, setIssuedAssets] = useState<string[]>([]);
 
   // Load profile from local storage on initial render
   useEffect(() => {
@@ -111,7 +108,7 @@ export function ProfileProvider({
       }
 
       // Get the current network properties from the list of supported networks
-      const currentNetwork = supportedNetworks.find(
+      const currentNetwork = SUPPORTED_NETWORKS.find(
         (net) => net.name === network
       );
 
@@ -131,9 +128,6 @@ export function ProfileProvider({
       try {
         // Download and verify the full profile metadata
         const profileMetaData = await erc725js.fetchData('LSP3Profile');
-        const lsp12IssuedAssets = await erc725js.fetchData(
-          'LSP12IssuedAssets[]'
-        );
 
         if (
           profileMetaData.value &&
@@ -142,11 +136,6 @@ export function ProfileProvider({
         ) {
           // Update the profile state
           setProfile(profileMetaData.value.LSP3Profile);
-        }
-
-        if (lsp12IssuedAssets.value && Array.isArray(lsp12IssuedAssets.value)) {
-          // Update the issued assets state
-          setIssuedAssets(lsp12IssuedAssets.value);
         }
       } catch (error) {
         console.log('Can not fetch profile data: ', error);
@@ -164,9 +153,8 @@ export function ProfileProvider({
     () => ({
       profile,
       setProfile,
-      issuedAssets,
     }),
-    [profile, setProfile, issuedAssets]
+    [profile, setProfile]
   );
 
   return (

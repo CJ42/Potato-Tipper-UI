@@ -23,23 +23,31 @@ const NavBar: React.FC = () => {
           </div>
           <div className="hidden md:flex items-center space-x-1">
             {/* <Link
-              href="/components"
+              href="/"
               className="py-5 px-3 text-gray-700 hover:text-gray-900"
             >
-              Components
-            </Link>
-            <Link
-              href="/contexts"
-              className="py-5 px-3 text-gray-700 hover:text-gray-900"
-            >
-              Contexts
-            </Link>
-            <Link
-              href="/utils"
-              className="py-5 px-3 text-gray-700 hover:text-gray-900"
-            >
-              Utility
+              Home
             </Link> */}
+            {/* <Link
+              href="/dashboard"
+              className="py-5 px-3 text-gray-700 hover:text-gray-900"
+            >
+              Dashboard
+            </Link> */}
+            {/* <Link
+              href="/stats"
+              className="py-5 px-3 text-gray-700 hover:text-gray-900"
+            >
+              Live Stats
+            </Link> */}
+            {/* <Link
+              href="/leaderboard"
+              className="py-5 px-3 text-gray-700 hover:text-gray-900"
+            >
+              Leaderboard
+            </Link> */}
+          </div>
+          <div className="flex space-x-4">
             <ConnectButton />
           </div>
         </div>
