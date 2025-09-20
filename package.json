@@ -1,5 +1,5 @@
 {
-  "name": "lukso-dapp-boilerplate",
+  "name": "Potato Tipper dApp",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,22 +13,23 @@
     "pages:dev": "wrangler pages dev .vercel/output/static"
   },
   "dependencies": {
-    "@cloudflare/next-on-pages": "^1.13.7",
+    "@cloudflare/next-on-pages": "^1.13.16",
     "@erc725/erc725.js": "latest",
     "@lukso/lsp-smart-contracts": "latest",
     "@lukso/web3-onboard-config": "^1.1.2",
-    "@tanstack/react-query": "^5.84.1",
+    "@rainbow-me/rainbowkit": "^2.2.8",
+    "@tanstack/react-query": "^5.89.0",
     "@web3-onboard/core": "^2.23.0",
     "@web3-onboard/injected-wallets": "^2.11.2",
     "@web3modal/ethers": "^4.1.11",
     "ethereum-blockies-base64": "^1.0.2",
     "ethers": "^6.13.4",
-    "next": "15.1.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "next": "15.5.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "siwe": "^2.3.2",
-    "viem": "2.x",
-    "wagmi": "^2.16.1"
+    "viem": "^2.37.6",
+    "wagmi": "^2.17.1"
   },
   "devDependencies": {
     "@types/node": "^22",
