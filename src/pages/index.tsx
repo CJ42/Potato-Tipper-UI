@@ -24,7 +24,7 @@ import {
   POTATO_TIPPER_ADDRESS,
   POTATO_TIPPER_AUTHORIZE_AMOUNT_DEFAULT,
   POTATO_TOKEN_ADDRESS,
-} from '@/utils/utils';
+} from '@/utils';
 
 /**
  * Displays the contents of the landing page within the app.

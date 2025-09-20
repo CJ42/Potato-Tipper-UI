@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: [
+    '@rainbow-me/rainbowkit',
+    '@vanilla-extract',
+    '@vanilla-extract/sprinkles',
+  ],
   images: {
     /** Allow images from all domains
      *  @next/image
