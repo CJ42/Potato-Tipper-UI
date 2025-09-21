@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 
 import ConnectButton from '../ConnectButton';
+import { ConnectButton as RainbowConnectButton } from '@rainbow-me/rainbowkit';
 
 /**
  * Provides a top navigation bar including links to all pages.
@@ -47,8 +48,11 @@ const NavBar: React.FC = () => {
               Leaderboard
             </Link> */}
           </div>
-          <div className="flex space-x-4">
-            <ConnectButton />
+          <div className="flex content-center space-x-4">
+            {/* Custom built connect button */}
+            {/* <ConnectButton /> */}
+            {/* RainbowKit button */}
+            <RainbowConnectButton accountStatus="address" chainStatus="icon" />
           </div>
         </div>
       </div>
