@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 
-import RainbowKitCustomConnectButton from '../RainbowKitCustomConnectButton/RainbowKitCustomConnectButton';
+import RainbowKitCustomConnectButton from '@/components/RainbowKitCustomConnectButton/RainbowKitCustomConnectButton';
 
 /**
  * Provides a top navigation bar including links to all pages.

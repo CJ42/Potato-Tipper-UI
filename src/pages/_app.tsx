@@ -1,35 +1,22 @@
 import React from 'react';
 import { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { http, WagmiProvider } from 'wagmi';
-import { lukso } from 'wagmi/chains';
+import { WagmiProvider } from 'wagmi';
 import {
-  getDefaultConfig,
-  lightTheme,
   RainbowKitProvider,
+  lightTheme,
 } from '@rainbow-me/rainbowkit';
+import { ProfileProvider } from '@/contexts/ProfileContext';
+import { config } from '../../wagmi.config';
 
 import RootLayout from '@/app/layout';
-import { ProfileProvider } from '@/contexts/ProfileContext';
-
 import NavBar from '@/components/NavBar';
-import { SUPPORTED_NETWORKS } from '@/consts/constants';
 import UniversalProfileRainbowKitAvatar from '@/components/UniversalProfileRainbowKitAvatar';
 
 import '@/app/globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
 
 const queryClient = new QueryClient();
-
-const rainbowConfig = getDefaultConfig({
-  appName: 'Potato Tipper',
-  projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string,
-  chains: [lukso],
-  ssr: true, // If your dApp uses server side rendering (SSR)
-  transports: {
-    [lukso.id]: http(SUPPORTED_NETWORKS[0].rpcUrl),
-  },
-});
 
 /**
  * The root component of this application. It wraps all pages
@@ -39,7 +26,7 @@ const rainbowConfig = getDefaultConfig({
  */
 function LUKSOdAppBoilerplate({ Component, pageProps }: AppProps) {
   return (
-    <WagmiProvider config={rainbowConfig}>
+    <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <ProfileProvider>
           <RainbowKitProvider
@@ -57,7 +44,6 @@ function LUKSOdAppBoilerplate({ Component, pageProps }: AppProps) {
             showRecentTransactions={true}
             coolMode
           >
-
             <RootLayout>
               <NavBar />
               <Component {...pageProps} />
