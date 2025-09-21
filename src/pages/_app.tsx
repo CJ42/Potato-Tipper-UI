@@ -45,7 +45,6 @@ function LUKSOdAppBoilerplate({ Component, pageProps }: AppProps) {
           <RainbowKitProvider
             avatar={UniversalProfileRainbowKitAvatar}
             appInfo={{
-              appName: 'Rainbowkit Demo',
               learnMoreUrl: 'https://learnaboutcryptowallets.example',
             }}
             modalSize="compact"
