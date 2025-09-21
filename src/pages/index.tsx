@@ -25,6 +25,7 @@ import {
   POTATO_TIPPER_AUTHORIZE_AMOUNT_DEFAULT,
   POTATO_TOKEN_ADDRESS,
 } from '@/utils';
+import Modal from '@/components/Modal';
 
 /**
  * Displays the contents of the landing page within the app.
@@ -97,7 +98,7 @@ export default function Home() {
       potatoTipperData.data &&
       potatoTipperData.data !== '0x' &&
       potatoTipperData.data !==
-        '0x0000000000000000000000000000000000000000000000000000000000000000' &&
+      '0x0000000000000000000000000000000000000000000000000000000000000000' &&
       typeof potatoTipperData.data === 'string' &&
       potatoTipperData.data.length > 2;
 
@@ -324,37 +325,6 @@ export default function Home() {
     );
   };
 
-  // Modal component
-  // TODO: move to separate component file
-  const Modal = ({
-    isOpen,
-    onClose,
-    children,
-  }: {
-    isOpen: boolean;
-    onClose: () => void;
-    children: React.ReactNode;
-  }) => {
-    if (!isOpen) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">UP Browser Extension Setup</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
-            >
-              ×
-            </button>
-          </div>
-          {children}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <main className="flex flex-col items-center justify-between px-16 pb-4">
       <div className="my-2 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
@@ -460,6 +430,7 @@ export default function Home() {
 
       {/* Modal for UP permissions setup */}
       <Modal
+        title="UP Browser Extension Setup"
         isOpen={isPermissionsModalOpen}
         onClose={() => setIsPermissionsModalOpen(false)}
       >
