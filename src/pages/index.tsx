@@ -11,7 +11,6 @@ import {
   useWaitForTransactionReceipt,
 } from 'wagmi';
 
-import { useEthereum } from '@/contexts/EthereumContext';
 import { abi as profileABI } from '@lukso/universalprofile-contracts/artifacts/UniversalProfile.json';
 
 import styles from './index.module.css';
@@ -31,9 +30,6 @@ import Modal from '@/components/Modal';
  * Displays the contents of the landing page within the app.
  */
 export default function Home() {
-  // TODO: remove and deprecate
-  const { connect, disconnect, account } = useEthereum();
-
   const { writeContract, data: hash, error, isPending } = useWriteContract();
 
   // Debug transaction states

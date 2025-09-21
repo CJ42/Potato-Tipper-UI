@@ -10,8 +10,6 @@ import {
 } from '@rainbow-me/rainbowkit';
 
 import RootLayout from '@/app/layout';
-// import { EthereumProvider } from '@/contexts/EthereumContext';
-// import { NetworkProvider } from '@/contexts/NetworkContext';
 import { ProfileProvider } from '@/contexts/ProfileContext';
 
 import NavBar from '@/components/NavBar';
@@ -42,8 +40,6 @@ function LUKSOdAppBoilerplate({ Component, pageProps }: AppProps) {
   return (
     <WagmiProvider config={rainbowConfig}>
       <QueryClientProvider client={queryClient}>
-        {/* <EthereumProvider> */}
-        {/* <NetworkProvider> */}
         <RainbowKitProvider
           appInfo={{
             appName: 'Rainbowkit Demo',
@@ -66,8 +62,6 @@ function LUKSOdAppBoilerplate({ Component, pageProps }: AppProps) {
             </RootLayout>
           </ProfileProvider>
         </RainbowKitProvider>
-        {/* </NetworkProvider> */}
-        {/* </EthereumProvider> */}
       </QueryClientProvider>
     </WagmiProvider>
   );

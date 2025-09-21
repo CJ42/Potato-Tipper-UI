@@ -1,21 +1,20 @@
 import Image from 'next/image';
 
-import { useEthereum } from '@/contexts/EthereumContext';
 import { useProfile } from '@/contexts/ProfileContext';
 
 import identicon from 'ethereum-blockies-base64';
+import { useAccount } from 'wagmi';
+
+// TODO: this code is old and deprecated. It needs to be fully refactored according to Wagmi documentation
 
 /**
- * Provides a button for connecting to and disconnecting from an
- * Ethereum-based blockchain. It leverages the useEthereum hook
- * from the EthereumContext for managing blockchain connections.
+ * Provides a button to connect and disconnect web3 wallet / UP Browser extension from the dApp
  */
-
 const ConnectButton: React.FC = () => {
-  const { connect, disconnect, account } = useEthereum();
+  const account = useAccount()
   const { profile } = useProfile();
 
-  const identiconUrl = account ? identicon(account) : '';
+  const identiconUrl = account ? identicon(account.address as string) : '';
 
   return (
     <div className="flex justify-between items-center">
@@ -47,7 +46,7 @@ const ConnectButton: React.FC = () => {
           // (profile?.name || account))
           <>
             <span className="font-bold mr-3 text-[#925648]">{`@${profile?.name}`}</span>
-            <code className="text-sm">{`${account.slice(0, 7)}...${account.slice(-5)}`}</code>
+            <code className="text-sm">{`${(account.address as string).slice(0, 7)}...${(account.address as string).slice(-5)}`}</code>
           </>
         )) ||
           'No account connected'}
@@ -55,7 +54,8 @@ const ConnectButton: React.FC = () => {
       <div style={{ zIndex: 999999999 }}>
         <button
           className="m-2 bg-green-garden text-white font-bold py-2 px-4 rounded"
-          onClick={account ? disconnect : connect}
+          // TODO: implement connect / disconnect functionality
+          onClick={() => void}
         >
           {account ? 'Disconnect' : 'Connect'}
         </button>
