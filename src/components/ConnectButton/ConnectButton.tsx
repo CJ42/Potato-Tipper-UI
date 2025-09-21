@@ -55,7 +55,7 @@ const ConnectButton: React.FC = () => {
         <button
           className="m-2 bg-green-garden text-white font-bold py-2 px-4 rounded"
           // TODO: implement connect / disconnect functionality
-          onClick={() => void}
+          onClick={(): void => { }}
         >
           {account ? 'Disconnect' : 'Connect'}
         </button>

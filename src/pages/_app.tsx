@@ -14,6 +14,7 @@ import { ProfileProvider } from '@/contexts/ProfileContext';
 
 import NavBar from '@/components/NavBar';
 import { SUPPORTED_NETWORKS } from '@/consts/constants';
+import UniversalProfileRainbowKitAvatar from '@/components/UniversalProfileRainbowKitAvatar';
 
 import '@/app/globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
@@ -40,28 +41,30 @@ function LUKSOdAppBoilerplate({ Component, pageProps }: AppProps) {
   return (
     <WagmiProvider config={rainbowConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
-          appInfo={{
-            appName: 'Rainbowkit Demo',
-            learnMoreUrl: 'https://learnaboutcryptowallets.example',
-          }}
-          modalSize="compact"
-          theme={lightTheme({
-            accentColor: '#4a7c59',
-            accentColorForeground: 'white',
-            borderRadius: 'medium',
-            fontStack: 'system',
-          })}
-          showRecentTransactions={true}
-          coolMode
-        >
-          <ProfileProvider>
+        <ProfileProvider>
+          <RainbowKitProvider
+            avatar={UniversalProfileRainbowKitAvatar}
+            appInfo={{
+              appName: 'Rainbowkit Demo',
+              learnMoreUrl: 'https://learnaboutcryptowallets.example',
+            }}
+            modalSize="compact"
+            theme={lightTheme({
+              accentColor: '#4a7c59',
+              accentColorForeground: 'white',
+              borderRadius: 'medium',
+              fontStack: 'system',
+            })}
+            showRecentTransactions={true}
+            coolMode
+          >
+
             <RootLayout>
               <NavBar />
               <Component {...pageProps} />
             </RootLayout>
-          </ProfileProvider>
-        </RainbowKitProvider>
+          </RainbowKitProvider>
+        </ProfileProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

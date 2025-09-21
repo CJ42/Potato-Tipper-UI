@@ -50,6 +50,7 @@ export function ProfileProvider({
 
   console.log('%c ProfileProvider account:', 'color: #FE005B', account);
   console.log('%c ProfileProvider chains:', 'color: #FE005B', chains);
+  console.log('%c ProfileProvider profile:', 'color: #FE005B', profile);
 
   // Load profile from local storage on initial render
   useEffect(() => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 
-import ConnectButton from '../ConnectButton';
+// import ConnectButton from '../ConnectButton';
 import { ConnectButton as RainbowConnectButton } from '@rainbow-me/rainbowkit';
 
 /**
@@ -52,7 +52,7 @@ const NavBar: React.FC = () => {
             {/* Custom built connect button */}
             {/* <ConnectButton /> */}
             {/* RainbowKit button */}
-            <RainbowConnectButton accountStatus="address" chainStatus="icon" />
+            <RainbowConnectButton accountStatus="full" chainStatus="icon" />
           </div>
         </div>
       </div>
