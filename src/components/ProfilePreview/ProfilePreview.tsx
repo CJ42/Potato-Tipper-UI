@@ -3,20 +3,19 @@ import Image from 'next/image';
 
 import identicon from 'ethereum-blockies-base64';
 
+import { useAccount } from 'wagmi';
 import { useProfile } from '@/contexts/ProfileContext';
-import { useEthereum } from '@/contexts/EthereumContext';
 import styles from './ProfilePreview.module.css';
 
 /**
  * Displays the user's profile information including images,
  * name, account address, description, and tags. The component
- * uses the useProfile and useEthereum hooks to fetch profile
- * and account data, respectively.
+ * uses the useProfile hooks to fetch profile data
  */
 const ProfilePreview: React.FC = () => {
   const { profile } = useProfile();
-  const { account } = useEthereum();
-  const identiconUrl = account ? identicon(account) : '';
+  const account = useAccount();
+  const identiconUrl = account ? identicon(account.address as string) : '';
 
   return (
     <div
@@ -65,8 +64,8 @@ const ProfilePreview: React.FC = () => {
           className={`${styles.blockie} mb-6 mr-6 bg-gray-200 rounded-full overflow-hidden border-4 border-white`}
         >
           {!profile?.profileImage ||
-          profile.profileImage.length === 0 ||
-          !identiconUrl ? (
+            profile.profileImage.length === 0 ||
+            !identiconUrl ? (
             <div className="w-full h-full bg-gray-300 rounded-full"></div> // Show grey background if there is no image
           ) : (
             <Image
@@ -87,7 +86,7 @@ const ProfilePreview: React.FC = () => {
         className={`${styles.profileData} text-center mt-4 bg-white p-2 rounded-lg relative`}
       >
         <p className="text-lg font-semibold">{profile?.name || 'Anonymous'}</p>
-        <p className="text-sm text-gray-600">{account || '0x'}</p>
+        <p className="text-sm text-gray-600">{account.address || '0x'}</p>
         {profile?.description ? (
           <p className="text-sm text-gray-500 mt-2">{profile?.description}</p>
         ) : (

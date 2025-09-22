@@ -1,16 +1,20 @@
 import React from 'react';
 import { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WagmiProvider } from 'wagmi';
+import {
+  RainbowKitProvider,
+  lightTheme,
+} from '@rainbow-me/rainbowkit';
+import { ProfileProvider } from '@/contexts/ProfileContext';
+import { config } from '../../wagmi.config';
+
+import RootLayout from '@/app/layout';
+import NavBar from '@/components/NavBar';
+import UniversalProfileRainbowKitAvatar from '@/components/UniversalProfileRainbowKitAvatar';
 
 import '@/app/globals.css';
-import RootLayout from '@/app/layout';
-import { EthereumProvider } from '@/contexts/EthereumContext';
-import { NetworkProvider } from '@/contexts/NetworkContext';
-import { ProfileProvider } from '@/contexts/ProfileContext';
-import NavBar from '@/components/NavBar';
-
-import { WagmiProvider } from 'wagmi';
-import { config } from '../../config';
+import '@rainbow-me/rainbowkit/styles.css';
 
 const queryClient = new QueryClient();
 
@@ -24,16 +28,28 @@ function LUKSOdAppBoilerplate({ Component, pageProps }: AppProps) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <EthereumProvider>
-          <NetworkProvider>
-            <ProfileProvider>
-              <RootLayout>
-                <NavBar />
-                <Component {...pageProps} />
-              </RootLayout>
-            </ProfileProvider>
-          </NetworkProvider>
-        </EthereumProvider>
+        <ProfileProvider>
+          <RainbowKitProvider
+            avatar={UniversalProfileRainbowKitAvatar}
+            appInfo={{
+              learnMoreUrl: 'https://learnaboutcryptowallets.example',
+            }}
+            modalSize="compact"
+            theme={lightTheme({
+              accentColor: '#4a7c59',
+              accentColorForeground: 'white',
+              borderRadius: 'medium',
+              fontStack: 'system',
+            })}
+            showRecentTransactions={true}
+            coolMode
+          >
+            <RootLayout>
+              <NavBar />
+              <Component {...pageProps} />
+            </RootLayout>
+          </RainbowKitProvider>
+        </ProfileProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

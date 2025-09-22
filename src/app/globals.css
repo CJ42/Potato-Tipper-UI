@@ -2,11 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * Core CSS Theme
+ * ==============
+ */
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  --lukso-pink: #4a7c59;
+
+  /* color theme */
+  --green-garden: #4a7c59;
+  --beige-soil: #f8f5e8;
+  --gold-potato: #e3a754;
+
+  /* TODO: wasn't this colour good before? Find a better theme colour consistent */
+  /* background-color: #d9c2a1; */
 }
 
 html,
@@ -35,8 +47,6 @@ body {
 body::before {
   content: ''; /* Add an empty content block */
   position: absolute; /* Position relative to the parent */
-  /* top: 0; */
-  /* left: 0; */
   width: 100%; /* Covers the whole parent */
   height: 100%; /* Covers the whole parent */
   background-color: rgba(0, 0, 0, 0.5); /* Set overlay color and opacity */
@@ -47,41 +57,37 @@ body::before {
   height: calc(100vh - 64px);
 }
 
-.elementBox {
-  border: 2px solid #fde2e2;
-  background-color: #fdf2f8;
+.bg-beige-soil {
+  background-color: var(--beige-soil);
+}
+
+.bg-green-garden {
+  background-color: var(--green-garden);
+}
+
+.bg-green-garden:hover {
+  background-color: var(--gold-potato);
+}
+
+/**
+ * Elements
+ * ==============
+ */
+
+.card {
   margin: 0 2rem 2rem 2rem;
   padding: 2rem;
+  text-align: center;
   align-items: center;
   border-radius: 1rem;
   min-width: 320px;
 }
 
-.elementDescription {
-  text-align: center;
-}
-
-.bg-lukso-pink {
-  background-color: var(--lukso-pink);
-}
-
-.bg-lukso-pink:hover {
-  background-color: #e3a754;
-}
-
 select:focus {
-  border-color: var(--lukso-pink);
+  border-color: var(--gold-potato);
   outline: 2px solid transparent;
   outline-offset: 2px;
-  box-shadow: 0 0 0 2px var(--lukso-pink);
-}
-
-.bg-blossom-white {
-  background-color: #f8f5e8;
-}
-
-nav {
-  background-color: #d9c2a1;
+  box-shadow: 0 0 0 2px var(--gold-potato);
 }
 
 /* Confetti effect - moved from index.module.css */

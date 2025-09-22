@@ -5,55 +5,30 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
-
-import lsp3ProfileSchema from '@erc725/erc725.js/schemas/LSP3ProfileMetadata.json' assert { type: 'json' };
+import { useAccount, useChains } from 'wagmi';
 import { ERC725, ERC725JSONSchema } from '@erc725/erc725.js';
 
-import supportedNetworks from '@/consts/SupportedNetworks.json';
-import { useEthereum } from './EthereumContext';
-import { useNetwork } from './NetworkContext';
+import { LSP3ProfileMetadata } from "@lukso/lsp3-contracts"
+import lsp3ProfileSchema from '@erc725/erc725.js/schemas/LSP3ProfileMetadata.json';
+import { SUPPORTED_NETWORKS } from '@/constants';
+import { isUniversalProfile } from '@/utils';
 
-interface Profile {
-  name: string;
-  description: string;
-  tags: string[];
-  links: Link[];
-  profileImage: Image[];
-  backgroundImage: Image[];
-}
-
-interface Link {
-  title: string;
-  url: string;
-}
-
-interface Image {
-  width: number;
-  height: number;
-  hashFunction: string;
-  hash: string;
-  url: string;
-}
 
 interface ProfileContextType {
-  profile: Profile | null;
-  setProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
-  issuedAssets: string[];
+  profile: LSP3ProfileMetadata | null;
+  setProfile: React.Dispatch<React.SetStateAction<LSP3ProfileMetadata | null>>;
 }
 
-const initialProfileContextValue: ProfileContextType = {
-  profile: null,
-  setProfile: () => {},
-  issuedAssets: [],
-};
-
-// Set up the empty React context
+// Set up empty React context initially
 const ProfileContext = createContext<ProfileContextType>(
-  initialProfileContextValue
+  {
+    profile: null,
+    setProfile: () => { },
+  }
 );
 
-/**
- * Custom hook to use the Profile context across the application.
+/** 
+ * Custom hook to use the Profile context and fetch profile data easily across the application and different pages.
  *
  * @returns {ProfileContextType} - The profile state containing all properties.
  */
@@ -70,11 +45,13 @@ export function useProfile() {
 export function ProfileProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  // State for the Profile provider
-  const { account } = useEthereum();
-  const { network } = useNetwork();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [issuedAssets, setIssuedAssets] = useState<string[]>([]);
+  const account = useAccount()
+  const chains = useChains()
+  const [profile, setProfile] = useState<LSP3ProfileMetadata | null>(null);
+
+  console.log('%c ProfileProvider account:', 'color: #FE005B', account);
+  console.log('%c ProfileProvider chains:', 'color: #FE005B', chains);
+  console.log('%c ProfileProvider profile:', 'color: #FE005B', profile);
 
   // Load profile from local storage on initial render
   useEffect(() => {
@@ -84,11 +61,11 @@ export function ProfileProvider({
     };
 
     const storedProfile = loadProfileFromLocalStorage();
+    console.log('ProfileProvider storedProfile', storedProfile);
     if (storedProfile && storedProfile.account === account) {
       setProfile(storedProfile.data);
     } else {
-      // Reset profile if account has changed
-      setProfile(null);
+      setProfile(null); // Reset profile if connected account has changed
     }
   }, [account]);
 
@@ -97,22 +74,21 @@ export function ProfileProvider({
     if (profile) {
       localStorage.setItem(
         'profileData',
-        JSON.stringify({ account, data: profile })
+        JSON.stringify({ account: account.address, data: profile })
       );
     }
   }, [profile, account]);
 
-  // Fetch and update profile data from blockchain
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (!account || !network) {
+      if (!account.address || !chains) {
         setProfile(null);
         return;
       }
 
-      // Get the current network properties from the list of supported networks
-      const currentNetwork = supportedNetworks.find(
-        (net) => net.name === network
+      // Check if the current network used is supported
+      const currentNetwork = SUPPORTED_NETWORKS.find(
+        (net) => net.chainId === chains[0].id
       );
 
       if (!currentNetwork) {
@@ -120,53 +96,50 @@ export function ProfileProvider({
         return;
       }
 
-      // Instanciate the LSP3-based smart contract
+      if (!(await isUniversalProfile(account.address))) {
+        setProfile(null);
+        return;
+      }
+
+      // Fetch the UniversalProfile infos from the blockchain
       const erc725js = new ERC725(
         lsp3ProfileSchema as ERC725JSONSchema[],
-        account,
+        account.address,
         currentNetwork.rpcUrl,
         { ipfsGateway: currentNetwork.ipfsGateway }
       );
 
+      // TODO: move this function in utils.ts
       try {
-        // Download and verify the full profile metadata
+
         const profileMetaData = await erc725js.fetchData('LSP3Profile');
-        const lsp12IssuedAssets = await erc725js.fetchData(
-          'LSP12IssuedAssets[]'
-        );
+        console.log('%c ProfileProvider profileMetaData: ', 'color: #FE005B', profileMetaData);
 
         if (
           profileMetaData.value &&
           typeof profileMetaData.value === 'object' &&
           'LSP3Profile' in profileMetaData.value
         ) {
-          // Update the profile state
+          // Update the profile infos in local storage
           setProfile(profileMetaData.value.LSP3Profile);
         }
-
-        if (lsp12IssuedAssets.value && Array.isArray(lsp12IssuedAssets.value)) {
-          // Update the issued assets state
-          setIssuedAssets(lsp12IssuedAssets.value);
-        }
       } catch (error) {
-        console.log('Can not fetch profile data: ', error);
+        console.error('ProfileProvider: could not fetch profile data: ', error);
       }
     };
 
     fetchProfileData();
-  }, [account, network]);
+  }, [account, chains]);
 
   /*
-   * Accessible context properties
-   * that only update on changes
+   * Accessible context properties that only update on changes
    */
   const contextProperties = useMemo(
     () => ({
       profile,
       setProfile,
-      issuedAssets,
     }),
-    [profile, setProfile, issuedAssets]
+    [profile, setProfile]
   );
 
   return (
