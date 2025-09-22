@@ -7,13 +7,7 @@ import { LSP26_TYPE_IDS } from '@lukso/lsp26-contracts';
 import { INTERFACE_ID_LSP0 } from '@lukso/lsp0-contracts';
 
 // Constants
-// TODO: move to separate file for organisation
-export const POTATO_TOKEN_ADDRESS =
-  '0x4C3e98829Eeff226526Ae4a492D054AA683eC0CE';
-export const POTATO_TIPPER_ADDRESS =
-  '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-export const POTATO_TIPPER_AUTHORIZE_AMOUNT_DEFAULT = parseUnits('1000000', 18);
-const POTATO_TIP_AMOUNT_DEFAULT = parseUnits('42', 18);
+import { POTATO_TIPPER_ADDRESS, POTATO_TIP_AMOUNT_DEFAULT } from './constants';
 
 const POTATO_TIP_AMOUNT_DATA_KEY_SCHEMA = {
   name: 'POTATO-Tip-Amount',

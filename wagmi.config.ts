@@ -1,4 +1,4 @@
-import { SUPPORTED_NETWORKS } from '@/consts/constants';
+import { SUPPORTED_NETWORKS } from '@/constants';
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { http } from 'viem';
 import { lukso } from 'wagmi/chains';

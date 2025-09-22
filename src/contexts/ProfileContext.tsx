@@ -10,7 +10,7 @@ import { ERC725, ERC725JSONSchema } from '@erc725/erc725.js';
 
 import { LSP3ProfileMetadata } from "@lukso/lsp3-contracts"
 import lsp3ProfileSchema from '@erc725/erc725.js/schemas/LSP3ProfileMetadata.json';
-import { SUPPORTED_NETWORKS } from '@/consts/constants';
+import { SUPPORTED_NETWORKS } from '@/constants';
 import { isUniversalProfile } from '@/utils';
 
 
