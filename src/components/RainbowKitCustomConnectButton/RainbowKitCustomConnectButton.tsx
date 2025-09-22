@@ -1,6 +1,7 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useProfile } from '@/contexts/ProfileContext';
 import identicon from 'ethereum-blockies-base64';
+import { SUPPORTED_NETWORKS } from '@/constants';
 
 
 const RainbowKitCustomConnectButton = () => {
@@ -10,7 +11,6 @@ const RainbowKitCustomConnectButton = () => {
                 account,
                 chain,
                 openAccountModal,
-                openChainModal,
                 openConnectModal,
                 mounted,
             }) => {
@@ -19,19 +19,13 @@ const RainbowKitCustomConnectButton = () => {
                 const ready = mounted;
                 const connected = ready && account && chain
 
-                let profileImageURL;
-                let displayName;
+                const profileImageURL = (connected && profile == null)
+                    ? identicon(account.address as string)
+                    : profile?.profileImage?.[0]?.url?.replace('ipfs://', SUPPORTED_NETWORKS[0].ipfsGateway + "/");
 
-                if (connected && profile == null) {
-                    profileImageURL = identicon(account.address as string);
-                    console.log('profileImageURL', profileImageURL);
-                    displayName = account.displayName;
-                } else {
-                    profileImageURL = profile?.profileImage?.[0]?.url?.replace('ipfs://', 'https://api.universalprofile.cloud/ipfs/');
-                    console.log('profileImageURL', profileImageURL);
-                    displayName = profile?.name;
-
-                }
+                const displayName = (connected && profile == null)
+                    ? account.displayName
+                    : profile?.name;
 
                 return (
                     <div
@@ -52,42 +46,9 @@ const RainbowKitCustomConnectButton = () => {
                                     </button>
                                 );
                             }
-                            if (chain.unsupported) {
-                                return (
-                                    <button onClick={openChainModal} type="button">
-                                        Wrong network
-                                    </button>
-                                );
-                            }
+
                             return (
                                 <div style={{ display: 'flex', gap: 12 }}>
-                                    {/* <button
-                                        onClick={openChainModal}
-                                        style={{ display: 'flex', alignItems: 'center' }}
-                                        type="button"
-                                    >
-                                        {chain.hasIcon && (
-                                            <div
-                                                style={{
-                                                    background: chain.iconBackground,
-                                                    width: 12,
-                                                    height: 12,
-                                                    borderRadius: 999,
-                                                    overflow: 'hidden',
-                                                    marginRight: 4,
-                                                }}
-                                            >
-                                                {chain.iconUrl && (
-                                                    <img
-                                                        alt={chain.name ?? 'Chain icon'}
-                                                        src={chain.iconUrl}
-                                                        style={{ width: 12, height: 12 }}
-                                                    />
-                                                )}
-                                            </div>
-                                        )}
-                                        {chain.name}
-                                    </button> */}
                                     <button onClick={openAccountModal} type="button" className="rounded">
                                         <div className="flex items-center space-x-2 px-4 py-2 bg-gray-100 shadow-md">
                                             <img
@@ -99,9 +60,7 @@ const RainbowKitCustomConnectButton = () => {
                                             />
                                             <span className="text-sm font-medium text-gray-800">{displayName}</span>
                                         </div>
-                                        {/* {account.displayBalance
-                                            ? ` (${account.displayBalance})`
-                                            : ''} */}
+                                        {/* TODO: display POTATO balance here 😁 */}
                                     </button>
                                 </div>
                             );
