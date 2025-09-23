@@ -15,7 +15,9 @@
   /* color theme */
   --green-garden: #4a7c59;
   --beige-soil: #f8f5e8;
+  --brown-soil: #7a5230;
   --gold-potato: #e3a754;
+  --red-error: #e74c3c;
 
   /* TODO: wasn't this colour good before? Find a better theme colour consistent */
   /* background-color: #d9c2a1; */
@@ -34,23 +36,32 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb)); */
-  background-image: url('/potato-garden-bg.webp'); /* Replace with the correct file name */
+  background-image: url('/potato-garden-bg.webp');
+  /* Replace with the correct file name */
 
   /* Add a semi-transparent overlay */
-  position: relative; /* Ensure content can stack over the background */
+  position: relative;
+  /* Ensure content can stack over the background */
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center; /* Centers the image */
+  background-position: center;
+  /* Centers the image */
   background-attachment: scroll;
 }
 
 body::before {
-  content: ''; /* Add an empty content block */
-  position: absolute; /* Position relative to the parent */
-  width: 100%; /* Covers the whole parent */
-  height: 100%; /* Covers the whole parent */
-  background-color: rgba(0, 0, 0, 0.5); /* Set overlay color and opacity */
-  z-index: -1; /* Ensures it stays behind the content */
+  content: '';
+  /* Add an empty content block */
+  position: absolute;
+  /* Position relative to the parent */
+  width: 100%;
+  /* Covers the whole parent */
+  height: 100%;
+  /* Covers the whole parent */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Set overlay color and opacity */
+  z-index: -1;
+  /* Ensures it stays behind the content */
 }
 
 .main-content {
@@ -61,13 +72,26 @@ body::before {
   background-color: var(--beige-soil);
 }
 
+.bg-brown-soil {
+  background-color: var(--brown-soil);
+}
+
 .bg-green-garden {
   background-color: var(--green-garden);
+}
+
+.bg-red-error {
+  background-color: var(--red-error);
 }
 
 .bg-green-garden:hover {
   background-color: var(--gold-potato);
 }
+
+.bg-red-error:hover {
+  background-color: var(--gold-potato);
+}
+
 
 /**
  * Elements
@@ -97,7 +121,8 @@ select:focus {
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* Ensure the confetti doesn't block clicks */
+  pointer-events: none;
+  /* Ensure the confetti doesn't block clicks */
   overflow: hidden;
   z-index: 9999;
 }

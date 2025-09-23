@@ -11,6 +11,7 @@ const RainbowKitCustomConnectButton = () => {
                 account,
                 chain,
                 openAccountModal,
+                openChainModal,
                 openConnectModal,
                 mounted,
             }) => {
@@ -43,6 +44,14 @@ const RainbowKitCustomConnectButton = () => {
                                 return (
                                     <button onClick={openConnectModal} type="button" className="m-2 bg-green-garden text-white font-bold py-2 px-4 rounded">
                                         Connect
+                                    </button>
+                                );
+                            }
+
+                            if (chain.unsupported) {
+                                return (
+                                    <button onClick={openChainModal} type="button" className="m-2 bg-red-error text-white font-bold py-2 px-4 rounded">
+                                        Wrong network
                                     </button>
                                 );
                             }

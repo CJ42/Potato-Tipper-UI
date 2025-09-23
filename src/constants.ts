@@ -1,5 +1,7 @@
 import { parseUnits } from "viem";
 
+export const INSTALL_UP_EXTENSION_URL = 'https://chromewebstore.google.com/detail/universal-profiles/abpickdkkbnbcoepogfhkhennhfhehfn?hl=en';
+
 export const SUPPORTED_NETWORKS = [
   {
     name: 'LUKSO Mainnet',

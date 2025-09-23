@@ -11,6 +11,8 @@ import {
   useWaitForTransactionReceipt,
 } from 'wagmi';
 
+import { useConnectModal, useAccountModal } from '@rainbow-me/rainbowkit';
+
 import { abi as profileABI } from '@lukso/universalprofile-contracts/artifacts/UniversalProfile.json';
 
 import styles from './index.module.css';
@@ -20,16 +22,20 @@ import { useAccount } from 'wagmi';
 import {
   encodeDataKeysValuesForLSP1Delegate,
   encodeDataKeysValuesForTipAmount,
+} from '@/utils';
+import {
+  INSTALL_UP_EXTENSION_URL,
   POTATO_TIPPER_ADDRESS,
   POTATO_TIPPER_AUTHORIZE_AMOUNT_DEFAULT,
   POTATO_TOKEN_ADDRESS,
-} from '@/utils';
+} from '@/constants';
 import Modal from '@/components/Modal';
 
 /**
  * Displays the contents of the landing page within the app.
  */
 export default function Home() {
+
   const { writeContract, data: hash, error, isPending } = useWriteContract();
 
   // Debug transaction states
@@ -46,11 +52,19 @@ export default function Home() {
 
   // Modal state
   const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
+  const [isEOANotSupportedModalOpen, setIsEOANotSupportedModalOpen] = useState(false);
   const [isPotatoTipperConnected, setIsPotatoTipperConnected] = useState(false);
 
   // -----
 
-  const { address } = useAccount();
+  const { address, connector } = useAccount();
+  console.log('%c useAccount connector:', 'color: #FE005B', connector);
+
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  console.log('%c openConnectModal:', 'color: #FE005B', openConnectModal);
+  console.log('%c openAccountModal:', 'color: #FE005B', openAccountModal);
+
 
   // Check if POTATO Tipper is connected
   const { key: lsp1DelegateKey } = encodeDataKeysValuesForLSP1Delegate();
@@ -69,6 +83,14 @@ export default function Home() {
     useWaitForTransactionReceipt({
       hash,
     });
+
+  useEffect(() => {
+    if (connector && connector.id !== 'cloud.universalprofile') {
+      setIsEOANotSupportedModalOpen(true);
+    } else {
+      setIsEOANotSupportedModalOpen(false);
+    }
+  }, [connector]);
 
   // Update connection status when data changes
   useEffect(() => {
@@ -515,6 +537,52 @@ export default function Home() {
             >
               Got it!
             </button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        title="EOA Wallet not supported"
+        isOpen={isEOANotSupportedModalOpen}
+        // Prevent closing the modal. Only closes once extension connected is Universal Profile
+        onClose={() => { }}
+        closeDisable={true}
+        size={0}
+        titleCenter="center"
+      >
+        <div className="align-center text-center space-y-4">
+          <p className="text-gray-700">
+            Oopss... The 🥔 tipper only supports the 🆙 Browser Extension.
+          </p>
+          <p className="text-gray-700">
+            EOA (Externally Owned Account) wallets are not supported.
+          </p>
+          <div className="my-2">
+            {address && openAccountModal && (
+              <div className="mx-auto flex max-w-sm items-center gap-x-4 rounded-xl -white bg-green-garden p-6 shadow-lg outline outline-black/5 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
+                <img className="size-16 shrink-0" src="/potato-sad.webp" alt="..." />
+                <button
+                  onClick={openAccountModal}
+                  type="button"
+                >
+                  <div className="text-left">
+                    <div className="text-xl font-medium text-black dark:text-white">Switch Wallet</div>
+                    <p className="text-white">Connect with the 🆙 Browser Extension to use the POTATO Tipper and tip new followers!</p>
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="my-2">
+            <a className="my-2" href="https://my.universalprofile.cloud/" target="_blank" rel="noopener noreferrer">
+              <div className="mx-auto flex max-w-sm items-center gap-x-4 rounded-xl bg-green-garden p-6 shadow-lg outline outline-black/5 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
+                <img className="size-16 shrink-0" src="/up_logo.png" alt="..." />
+                <div className="text-left">
+                  <div className="text-xl font-medium text-black dark:text-white">Create a Universal Profile</div>
+                  <p className="text-white">Never heard of Universal Profiles? Create one in less than 3min and start tipping 🥔 to new followers!</p>
+                </div>
+              </div>
+            </a>
           </div>
         </div>
       </Modal>
