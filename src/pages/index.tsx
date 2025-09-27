@@ -1,26 +1,18 @@
-import CardWithContent from '@/components/CardWithContent/CardWithContent';
-import ProfilePreview from '@/components/ProfilePreview';
-import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
+import { useAccount, useReadContract, useWriteContract } from 'wagmi';
+import { useAccountModal } from '@rainbow-me/rainbowkit';
+
 // import PotatoTipperNotSetImage from '@/public/images/potato-tipper-not-set.webp';
 // import PotatoTipperNotSetImage from '../../public/images/potato-tipper-not-set.webp';
 import { lsp7DigitalAssetAbi } from '@lukso/lsp7-contracts/abi';
+import { universalProfileAbi } from '@lukso/universalprofile-contracts/abi';
+
+import CardWithContent from '@/components/CardWithContent/CardWithContent';
+import Modal from '@/components/Modal';
+import Box from '@/components/Box';
 
 import {
-  useReadContract,
-  useWriteContract,
-  useWaitForTransactionReceipt,
-} from 'wagmi';
-
-import { useConnectModal, useAccountModal } from '@rainbow-me/rainbowkit';
-
-import { abi as profileABI } from '@lukso/universalprofile-contracts/artifacts/UniversalProfile.json';
-
-import styles from './index.module.css';
-import { useEffect, useRef, useState } from 'react';
-import { ethers, parseUnits } from 'ethers';
-import { useAccount } from 'wagmi';
-import {
-  encodeDataKeysValuesForLSP1Delegate,
+  getLSP1DelegataDataKeyValues,
   encodeDataKeysValuesForTipAmount,
 } from '@/utils';
 import {
@@ -28,62 +20,28 @@ import {
   POTATO_TIPPER_ADDRESS,
   POTATO_TIPPER_AUTHORIZE_AMOUNT_DEFAULT,
   POTATO_TOKEN_ADDRESS,
+  SUPPORTED_NETWORKS,
 } from '@/constants';
-import Modal from '@/components/Modal';
+import HoverVideo from '@/components/HoverVideo';
 
 /**
  * Displays the contents of the landing page within the app.
  */
 export default function Home() {
+  const { address, connector } = useAccount();
+  const { openAccountModal } = useAccountModal();
+  const { writeContract } = useWriteContract();
 
-  const { writeContract, data: hash, error, isPending } = useWriteContract();
-
-  // Debug transaction states
-  useEffect(() => {
-    console.log(
-      'Transaction states - hash:',
-      hash,
-      'isPending:',
-      isPending,
-      'error:',
-      error
-    );
-  }, [hash, isPending, error]);
+  console.log('%c openAccountModal:', 'color: #FE005B', openAccountModal);
+  console.log('%c useAccount connector:', 'color: #FE005B', connector);
 
   // Modal state
   const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
-  const [isEOANotSupportedModalOpen, setIsEOANotSupportedModalOpen] = useState(false);
+  const [isEOANotSupportedModalOpen, setIsEOANotSupportedModalOpen] =
+    useState(false);
   const [isPotatoTipperConnected, setIsPotatoTipperConnected] = useState(false);
 
-  // -----
-
-  const { address, connector } = useAccount();
-  console.log('%c useAccount connector:', 'color: #FE005B', connector);
-
-  const { openConnectModal } = useConnectModal();
-  const { openAccountModal } = useAccountModal();
-  console.log('%c openConnectModal:', 'color: #FE005B', openConnectModal);
-  console.log('%c openAccountModal:', 'color: #FE005B', openAccountModal);
-
-
-  // Check if POTATO Tipper is connected
-  const { key: lsp1DelegateKey } = encodeDataKeysValuesForLSP1Delegate();
-  const potatoTipperData = useReadContract({
-    abi: profileABI,
-    address: address,
-    functionName: 'getData',
-    args: [lsp1DelegateKey],
-    query: {
-      enabled: !!address, // Only run when address is available
-    },
-  });
-
-  // Wait for transaction receipt to refetch data
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({
-      hash,
-    });
-
+  // ----- Only UP Browser Extension Check -----
   useEffect(() => {
     if (connector && connector.id !== 'cloud.universalprofile') {
       setIsEOANotSupportedModalOpen(true);
@@ -91,6 +49,38 @@ export default function Home() {
       setIsEOANotSupportedModalOpen(false);
     }
   }, [connector]);
+
+  // ----- POTATO Tipper Connection Check -----
+
+  // Step 1: Check if POTATO Tipper is connected. If not allow to connect it
+  const { lsp1DelegateKey, lsp1DelegateValue } = getLSP1DelegataDataKeyValues();
+
+  // TODO: create as a function isPotatoTipperConnected(address) to reuse it and embed the useReadContract inside maybe?
+  const potatoTipperData = useReadContract({
+    abi: universalProfileAbi,
+    address: address,
+    functionName: 'getData',
+    args: [lsp1DelegateKey as `0x${string}`],
+    query: {
+      enabled: !!address, // Only run when address is available
+    },
+  });
+
+  // Connect Potato Tipper
+  // TODO: debug transaction reverting
+  const connectPotatoTipper = () => {
+    if (!address) {
+      console.error('No wallet address found. Please connect your wallet.');
+      return;
+    }
+
+    writeContract({
+      abi: universalProfileAbi,
+      address,
+      functionName: 'setData',
+      args: [lsp1DelegateKey, lsp1DelegateValue],
+    });
+  };
 
   // Update connection status when data changes
   useEffect(() => {
@@ -116,7 +106,7 @@ export default function Home() {
       potatoTipperData.data &&
       potatoTipperData.data !== '0x' &&
       potatoTipperData.data !==
-      '0x0000000000000000000000000000000000000000000000000000000000000000' &&
+        '0x0000000000000000000000000000000000000000000000000000000000000000' &&
       typeof potatoTipperData.data === 'string' &&
       potatoTipperData.data.length > 2;
 
@@ -132,26 +122,7 @@ export default function Home() {
     console.log('=== END DATA UPDATE DEBUG ===');
   }, [potatoTipperData.data]);
 
-  // Step 1: Connect Potato Tipper
-  // TODO: debug transaction reverting
-  const connectPotatoTipper = () => {
-    if (!address) {
-      console.error('No wallet address found. Please connect your wallet.');
-      return;
-    }
-
-    const { key, value } = encodeDataKeysValuesForLSP1Delegate();
-
-    writeContract({
-      abi: profileABI,
-      address,
-      functionName: 'setData',
-      args: [key, value],
-    });
-  };
-
   // Step 2: Setup tip amount
-  // TODO: add input field
   const setupTipAmount = () => {
     if (!address) {
       console.error('No wallet address found. Please connect your wallet.');
@@ -161,11 +132,11 @@ export default function Home() {
     const { key, value } = encodeDataKeysValuesForTipAmount();
 
     writeContract({
-      abi: profileABI,
+      abi: universalProfileAbi,
       address,
       functionName: 'setData',
       // Example: tip 42 $POTATOs
-      args: [key, value],
+      args: [key as `0x${string}`, value as `0x${string}`],
     });
   };
 
@@ -219,128 +190,6 @@ export default function Home() {
         confetti.remove();
       }, 4000);
     }
-  };
-
-  // TODO: move to separate component file
-  type BoxProps = {
-    emoji: string;
-    title: string;
-    text: string;
-    onClick: () => void;
-  };
-
-  const Box = ({ emoji, title, text, onClick }: BoxProps) => (
-    <button
-      onClick={onClick}
-      className="group rounded-lg border border-transparent px-5 py-4 hover:border-slate-200 hover:bg-white text-left"
-      rel="noopener noreferrer"
-    >
-      <h2 className={`mb-3 text-2xl font-semibold`}>
-        <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none mr-2">
-          {emoji}
-        </span>
-        {title}
-      </h2>
-      <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>{text}</p>
-    </button>
-  );
-
-  // HoverVideo component
-  // TODO: move to separate component file
-  const HoverVideo = ({
-    imageSrc,
-    videoSrc,
-    alt,
-    width,
-    height,
-  }: {
-    imageSrc: string;
-    videoSrc: string;
-    alt: string;
-    width: string;
-    height: string;
-  }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const videoRef = useRef<HTMLVideoElement>(null);
-
-    const handlePlay = () => {
-      if (videoRef.current) {
-        if (isPlaying) {
-          videoRef.current.pause();
-          setIsPlaying(false);
-        } else {
-          videoRef.current.play();
-          setIsPlaying(true);
-        }
-      }
-    };
-
-    const handleVideoEnd = () => {
-      setIsPlaying(false);
-    };
-
-    return (
-      <div
-        className="relative group cursor-pointer"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => {
-          setIsHovered(false);
-          if (videoRef.current && isPlaying) {
-            videoRef.current.pause();
-            setIsPlaying(false);
-          }
-        }}
-        onClick={handlePlay}
-      >
-        {/* Image */}
-        <Image
-          src={imageSrc}
-          width={parseInt(width)}
-          height={parseInt(height)}
-          alt={alt}
-          className={`transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
-        />
-
-        {/* Video Overlay */}
-        <div
-          className={`absolute inset-0 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <video
-            ref={videoRef}
-            src={videoSrc}
-            width={parseInt(width)}
-            height={parseInt(height)}
-            className="w-full h-full object-cover rounded-lg"
-            onEnded={handleVideoEnd}
-            preload="metadata"
-          />
-
-          {/* Play/Pause Button Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-black bg-opacity-50 rounded-full p-4 hover:bg-opacity-70 transition-all duration-200">
-              {isPlaying ? (
-                <svg
-                  className="w-8 h-8 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                </svg>
-              ) : (
-                <svg
-                  className="w-8 h-8 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -400,14 +249,26 @@ export default function Home() {
             <label className="block mb-2 text-sm text-gray-900">
               Connected address:
             </label>
-            <input
-              type="number"
-              id="number-input"
-              aria-describedby="helper-text-explanation"
-              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-green-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="90210"
-              required
-            />
+            <a
+              href={`${SUPPORTED_NETWORKS[0].explorer}/address/${POTATO_TIPPER_ADDRESS}`}
+              target="_blank"
+            >
+              <code>{POTATO_TIPPER_ADDRESS}</code>
+            </a>
+            <p>
+              {' '}
+              {isPotatoTipperConnected
+                ? '✅ POTATO Tipper connected to 🆙'
+                : '❌ POTATO Tipper not connected to 🆙'}
+            </p>
+            {/* TODO: allow to disconnect if connected */}
+            <button
+              type="button"
+              className="m-2 bg-green-garden text-white font-bold py-2 px-4 rounded"
+              onClick={connectPotatoTipper}
+            >
+              Connect POTATO Tipper
+            </button>
           </div>
           <div className="mx-5">
             <label className="block mb-2 text-sm text-gray-900">
@@ -417,7 +278,7 @@ export default function Home() {
               type="number"
               id="number-input"
               aria-describedby="helper-text-explanation"
-              className="bg-[#4a7c59] border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className="bg-gray-100 space-x-2 px-4 py-2 shadow-md border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               placeholder="90210"
               required
             />
@@ -541,18 +402,25 @@ export default function Home() {
         </div>
       </Modal>
 
+      {/* Modal for EOA wallets not supported */}
       <Modal
         title="EOA Wallet not supported"
         isOpen={isEOANotSupportedModalOpen}
         // Prevent closing the modal. Only closes once extension connected is Universal Profile
-        onClose={() => { }}
+        onClose={() => {}}
         closeDisable={true}
         size={0}
-        titleCenter="center"
       >
         <div className="align-center text-center space-y-4">
           <p className="text-gray-700">
-            Oopss... The 🥔 tipper only supports the 🆙 Browser Extension.
+            Oopss... The 🥔 tipper only supports the{' '}
+            <a
+              href={INSTALL_UP_EXTENSION_URL}
+              target="_blank"
+              className="text-blue-500 hover:text-blue-700"
+            >
+              🆙 Browser Extension.
+            </a>
           </p>
           <p className="text-gray-700">
             EOA (Externally Owned Account) wallets are not supported.
@@ -560,26 +428,46 @@ export default function Home() {
           <div className="my-2">
             {address && openAccountModal && (
               <div className="mx-auto flex max-w-sm items-center gap-x-4 rounded-xl -white bg-green-garden p-6 shadow-lg outline outline-black/5 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
-                <img className="size-16 shrink-0" src="/potato-sad.webp" alt="..." />
-                <button
-                  onClick={openAccountModal}
-                  type="button"
-                >
+                <img
+                  className="size-16 shrink-0"
+                  src="/potato-sad.webp"
+                  alt="..."
+                />
+                <button onClick={openAccountModal} type="button">
                   <div className="text-left">
-                    <div className="text-xl font-medium text-black dark:text-white">Switch Wallet</div>
-                    <p className="text-white">Connect with the 🆙 Browser Extension to use the POTATO Tipper and tip new followers!</p>
+                    <div className="text-xl font-medium text-black dark:text-white">
+                      Switch Wallet
+                    </div>
+                    <p className="text-white">
+                      Connect with the 🆙 Browser Extension to use the POTATO
+                      Tipper and tip new followers!
+                    </p>
                   </div>
                 </button>
               </div>
             )}
           </div>
           <div className="my-2">
-            <a className="my-2" href="https://my.universalprofile.cloud/" target="_blank" rel="noopener noreferrer">
+            <a
+              className="my-2"
+              href="https://my.universalprofile.cloud/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <div className="mx-auto flex max-w-sm items-center gap-x-4 rounded-xl bg-green-garden p-6 shadow-lg outline outline-black/5 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
-                <img className="size-16 shrink-0" src="/up_logo.png" alt="..." />
+                <img
+                  className="size-16 shrink-0"
+                  src="/up_logo.png"
+                  alt="..."
+                />
                 <div className="text-left">
-                  <div className="text-xl font-medium text-black dark:text-white">Create a Universal Profile</div>
-                  <p className="text-white">Never heard of Universal Profiles? Create one in less than 3min and start tipping 🥔 to new followers!</p>
+                  <div className="text-xl font-medium text-black dark:text-white">
+                    Create a Universal Profile
+                  </div>
+                  <p className="text-white">
+                    Never heard of Universal Profiles? Create one in less than
+                    3min and start tipping 🥔 to new followers!
+                  </p>
                 </div>
               </div>
             </a>

@@ -30,7 +30,10 @@ const provider = createPublicClient({
 const erc725js = new ERC725([...LSP1Schema, POTATO_TIP_AMOUNT_DATA_KEY_SCHEMA]);
 
 /// @dev encode data key for LSP1UniversalReceiverDelegate:<new-follower> type ID
-export function encodeDataKeysValuesForLSP1Delegate() {
+export function getLSP1DelegataDataKeyValues(): {
+  lsp1DelegateKey: `0x${string}`;
+  lsp1DelegateValue: `0x${string}`;
+} {
   const {
     keys: [key],
     values: [value],
@@ -40,7 +43,10 @@ export function encodeDataKeysValuesForLSP1Delegate() {
     value: POTATO_TIPPER_ADDRESS,
   });
 
-  return { key, value };
+  const lsp1DelegateKey = key as `0x${string}`;
+  const lsp1DelegateValue = value as `0x${string}`;
+
+  return { lsp1DelegateKey, lsp1DelegateValue };
 }
 
 /// @dev encode data key / value where we will store the POTATO Tip amount
