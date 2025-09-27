@@ -39,7 +39,11 @@ export default function Home() {
   const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
   const [isEOANotSupportedModalOpen, setIsEOANotSupportedModalOpen] =
     useState(false);
-  const [isPotatoTipperConnected, setIsPotatoTipperConnected] = useState(false);
+
+  const [
+    connectedLSP1DelegateToReactOnFollow,
+    setConnectedLSP1DelegateToReactOnFollow,
+  ] = useState('');
 
   // ----- Only UP Browser Extension Check -----
   useEffect(() => {
@@ -66,6 +70,12 @@ export default function Home() {
     },
   });
 
+  useEffect(() => {
+    const connectedLSP1Delegate = potatoTipperData.data;
+    console.log('connectedLSP1Delegate', connectedLSP1Delegate);
+    setConnectedLSP1DelegateToReactOnFollow(connectedLSP1Delegate);
+  }, [potatoTipperData]);
+
   // Connect Potato Tipper
   // TODO: debug transaction reverting
   const connectPotatoTipper = () => {
@@ -81,46 +91,6 @@ export default function Home() {
       args: [lsp1DelegateKey, lsp1DelegateValue],
     });
   };
-
-  // Update connection status when data changes
-  useEffect(() => {
-    console.log('=== DATA UPDATE DEBUG ===');
-    console.log('Raw data from contract:', potatoTipperData.data);
-    console.log('Data type:', typeof potatoTipperData.data);
-    console.log(
-      'Data length:',
-      typeof potatoTipperData.data === 'string'
-        ? potatoTipperData.data.length
-        : 'N/A'
-    );
-    console.log('Is data truthy:', !!potatoTipperData.data);
-    console.log('Is data not 0x:', potatoTipperData.data !== '0x');
-    console.log(
-      'Current isPotatoTipperConnected state:',
-      isPotatoTipperConnected
-    );
-    console.log('Expected POTATO_TIPPER_ADDRESS:', POTATO_TIPPER_ADDRESS);
-
-    // More robust check for connection status
-    const isConnected =
-      potatoTipperData.data &&
-      potatoTipperData.data !== '0x' &&
-      potatoTipperData.data !==
-        '0x0000000000000000000000000000000000000000000000000000000000000000' &&
-      typeof potatoTipperData.data === 'string' &&
-      potatoTipperData.data.length > 2;
-
-    console.log('Is connected check result:', isConnected);
-
-    if (isConnected) {
-      console.log('✅ Setting isPotatoTipperConnected to true');
-      setIsPotatoTipperConnected(true);
-    } else {
-      console.log('❌ Setting isPotatoTipperConnected to false');
-      setIsPotatoTipperConnected(false);
-    }
-    console.log('=== END DATA UPDATE DEBUG ===');
-  }, [potatoTipperData.data]);
 
   // Step 2: Setup tip amount
   const setupTipAmount = () => {
@@ -210,6 +180,7 @@ export default function Home() {
           <CardWithContent />
         </div>
       </div>
+
       <div className="rounded-lg border border-red-100 p-5 bg-beige-soil mt-4">
         <h2 className="text-2xl m-5">Setup the POTATO Tipper</h2>
         <div className="mb-32 grid text-left lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
@@ -220,7 +191,11 @@ export default function Home() {
             onClick={() => setIsPermissionsModalOpen(true)}
           />
           <Box
-            emoji={isPotatoTipperConnected ? '✅' : '2️⃣'}
+            emoji={
+              connectedLSP1DelegateToReactOnFollow === POTATO_TIPPER_ADDRESS
+                ? '✅'
+                : '2️⃣'
+            }
             title="Connect the POTATO Tipper"
             text="Connect the POTATO Tipper contract to your Universal Profile. It will react when you receive new followers 📢."
             onClick={connectPotatoTipper}
@@ -245,23 +220,28 @@ export default function Home() {
             {/* TODO: add CHECK if UP Browser Extension Main Controller has enough permissions*/}{' '}
           </div>
           <div className="mx-5">
-            {/* TODO: add check if the connected address for the LSP1 Delegate connected to the type ID is set correctly or not */}
             <label className="block mb-2 text-sm text-gray-900">
               Connected address:
             </label>
-            <a
-              href={`${SUPPORTED_NETWORKS[0].explorer}/address/${POTATO_TIPPER_ADDRESS}`}
-              target="_blank"
-            >
-              <code>{POTATO_TIPPER_ADDRESS}</code>
-            </a>
+            {address && potatoTipperData.status === 'success' && (
+              <p>
+                <a
+                  href={`${SUPPORTED_NETWORKS[0].explorer}/address/${connectedLSP1DelegateToReactOnFollow}`}
+                  target="_blank"
+                >
+                  <code>{connectedLSP1DelegateToReactOnFollow}</code>
+                </a>
+              </p>
+            )}
+            {address && potatoTipperData.status === 'pending' && (
+              <p>Loading...'</p>
+            )}
             <p>
               {' '}
-              {isPotatoTipperConnected
+              {connectedLSP1DelegateToReactOnFollow === POTATO_TIPPER_ADDRESS
                 ? '✅ POTATO Tipper connected to 🆙'
                 : '❌ POTATO Tipper not connected to 🆙'}
             </p>
-            {/* TODO: allow to disconnect if connected */}
             <button
               type="button"
               className="m-2 bg-green-garden text-white font-bold py-2 px-4 rounded"
@@ -269,6 +249,7 @@ export default function Home() {
             >
               Connect POTATO Tipper
             </button>
+            {/* TODO: allow to disconnect if connected */}
           </div>
           <div className="mx-5">
             <label className="block mb-2 text-sm text-gray-900">
