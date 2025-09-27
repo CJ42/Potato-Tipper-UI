@@ -15,7 +15,6 @@
   /* color theme */
   --green-garden: #4a7c59;
   --beige-soil: #f8f5e8;
-  --brown-soil: #7a5230;
   --gold-potato: #e3a754;
   --red-error: #e74c3c;
 
@@ -70,10 +69,6 @@ body::before {
 
 .bg-beige-soil {
   background-color: var(--beige-soil);
-}
-
-.bg-brown-soil {
-  background-color: var(--brown-soil);
 }
 
 .bg-green-garden {

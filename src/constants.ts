@@ -1,14 +1,24 @@
-import { parseUnits } from "viem";
+import { parseUnits } from 'viem';
 
-export const INSTALL_UP_EXTENSION_URL = 'https://chromewebstore.google.com/detail/universal-profiles/abpickdkkbnbcoepogfhkhennhfhehfn?hl=en';
+export const INSTALL_UP_EXTENSION_URL =
+  'https://chromewebstore.google.com/detail/universal-profiles/abpickdkkbnbcoepogfhkhennhfhehfn?hl=en';
 
-export const SUPPORTED_NETWORKS = [
+export type Network = {
+  name: string;
+  chainId: number;
+  rpcUrl: string;
+  ipfsGateway: string;
+  explorer: string;
+  token: string;
+};
+
+export const SUPPORTED_NETWORKS: Network[] = [
   {
     name: 'LUKSO Mainnet',
     chainId: 42,
     rpcUrl: 'https://42.rpc.thirdweb.com',
     ipfsGateway: 'https://api.universalprofile.cloud/ipfs',
-    explorer: 'https://explorer.execution.mainnet.lukso.network/',
+    explorer: 'https://explorer.lukso.network/',
     token: 'LYX',
   },
 ];

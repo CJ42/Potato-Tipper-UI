@@ -8,11 +8,10 @@ import React, {
 import { useAccount, useChains } from 'wagmi';
 import { ERC725, ERC725JSONSchema } from '@erc725/erc725.js';
 
-import { LSP3ProfileMetadata } from "@lukso/lsp3-contracts"
-import lsp3ProfileSchema from '@erc725/erc725.js/schemas/LSP3ProfileMetadata.json';
-import { SUPPORTED_NETWORKS } from '@/constants';
-import { isUniversalProfile } from '@/utils';
+import { LSP3ProfileMetadata } from '@lukso/lsp3-contracts';
 
+import { SUPPORTED_NETWORKS } from '@/constants';
+import { fetchProfileInfos, isUniversalProfile } from '@/utils';
 
 interface ProfileContextType {
   profile: LSP3ProfileMetadata | null;
@@ -20,14 +19,12 @@ interface ProfileContextType {
 }
 
 // Set up empty React context initially
-const ProfileContext = createContext<ProfileContextType>(
-  {
-    profile: null,
-    setProfile: () => { },
-  }
-);
+const ProfileContext = createContext<ProfileContextType>({
+  profile: null,
+  setProfile: () => {},
+});
 
-/** 
+/**
  * Custom hook to use the Profile context and fetch profile data easily across the application and different pages.
  *
  * @returns {ProfileContextType} - The profile state containing all properties.
@@ -45,8 +42,8 @@ export function useProfile() {
 export function ProfileProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const account = useAccount()
-  const chains = useChains()
+  const account = useAccount();
+  const chains = useChains();
   const [profile, setProfile] = useState<LSP3ProfileMetadata | null>(null);
 
   console.log('%c ProfileProvider account:', 'color: #FE005B', account);
@@ -101,30 +98,14 @@ export function ProfileProvider({
         return;
       }
 
-      // Fetch the UniversalProfile infos from the blockchain
-      const erc725js = new ERC725(
-        lsp3ProfileSchema as ERC725JSONSchema[],
+      const profileMetadata = await fetchProfileInfos(
         account.address,
-        currentNetwork.rpcUrl,
-        { ipfsGateway: currentNetwork.ipfsGateway }
+        currentNetwork
       );
 
-      // TODO: move this function in utils.ts
-      try {
-
-        const profileMetaData = await erc725js.fetchData('LSP3Profile');
-        console.log('%c ProfileProvider profileMetaData: ', 'color: #FE005B', profileMetaData);
-
-        if (
-          profileMetaData.value &&
-          typeof profileMetaData.value === 'object' &&
-          'LSP3Profile' in profileMetaData.value
-        ) {
-          // Update the profile infos in local storage
-          setProfile(profileMetaData.value.LSP3Profile);
-        }
-      } catch (error) {
-        console.error('ProfileProvider: could not fetch profile data: ', error);
+      if (profileMetadata) {
+        // Update the profile infos in local storage
+        setProfile(profileMetadata);
       }
     };
 

@@ -1,13 +1,18 @@
-import { keccak256, parseUnits, stringToHex, createPublicClient, http } from 'viem';
-import { lukso } from 'viem/chains'
-import { ERC725 } from '@erc725/erc725.js';
+import { keccak256, stringToHex, createPublicClient, http } from 'viem';
+import { lukso } from 'viem/chains';
+import { ERC725, ERC725JSONSchema } from '@erc725/erc725.js';
 
 import LSP1Schema from '@erc725/erc725.js/schemas/LSP1UniversalReceiverDelegate.json';
+import LSP3Schema from '@erc725/erc725.js/schemas/LSP3ProfileMetadata.json';
 import { LSP26_TYPE_IDS } from '@lukso/lsp26-contracts';
 import { INTERFACE_ID_LSP0 } from '@lukso/lsp0-contracts';
 
 // Constants
-import { POTATO_TIPPER_ADDRESS, POTATO_TIP_AMOUNT_DEFAULT } from './constants';
+import {
+  Network,
+  POTATO_TIPPER_ADDRESS,
+  POTATO_TIP_AMOUNT_DEFAULT,
+} from './constants';
 
 const POTATO_TIP_AMOUNT_DATA_KEY_SCHEMA = {
   name: 'POTATO-Tip-Amount',
@@ -20,7 +25,7 @@ const POTATO_TIP_AMOUNT_DATA_KEY_SCHEMA = {
 const provider = createPublicClient({
   chain: lukso,
   transport: http(),
-})
+});
 
 const erc725js = new ERC725([...LSP1Schema, POTATO_TIP_AMOUNT_DATA_KEY_SCHEMA]);
 
@@ -51,10 +56,7 @@ export function encodeDataKeysValuesForTipAmount() {
   return { key, value };
 }
 
-
-export async function isUniversalProfile(
-  address: string
-): Promise<boolean> {
+export async function isUniversalProfile(address: string): Promise<boolean> {
   try {
     if (!address) {
       return false;
@@ -70,32 +72,68 @@ export async function isUniversalProfile(
       address: address as `0x${string}`,
       abi: [
         {
-          "inputs": [
+          inputs: [
             {
-              "internalType": "bytes4",
-              "name": "interfaceId",
-              "type": "bytes4"
-            }
+              internalType: 'bytes4',
+              name: 'interfaceId',
+              type: 'bytes4',
+            },
           ],
-          "name": "supportsInterface",
-          "outputs": [
+          name: 'supportsInterface',
+          outputs: [
             {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
+              internalType: 'bool',
+              name: '',
+              type: 'bool',
+            },
           ],
-          "stateMutability": "view",
-          "type": "function"
-        }
+          stateMutability: 'view',
+          type: 'function',
+        },
       ],
       functionName: 'supportsInterface',
       args: [INTERFACE_ID_LSP0],
-    })
+    });
     console.log('supportsLSP0Interface', supportsLSP0Interface);
     return supportsLSP0Interface;
   } catch (error) {
     console.error('Error checking LSP0 interface ID: ', error);
     return false;
+  }
+}
+
+export async function fetchProfileInfos(
+  profileAddress: string,
+  network: Network
+) {
+  try {
+    // Fetch the UniversalProfile infos from the blockchain
+    const erc725js = new ERC725(
+      LSP3Schema as ERC725JSONSchema[],
+      profileAddress,
+      network.rpcUrl,
+      { ipfsGateway: network.ipfsGateway }
+    );
+
+    const profileMetaData = await erc725js.fetchData('LSP3Profile');
+    console.log(
+      '%c ProfileContext profileMetaData: ',
+      'color: #FE005B',
+      profileMetaData
+    );
+
+    if (
+      profileMetaData.value &&
+      typeof profileMetaData.value === 'object' &&
+      'LSP3Profile' in profileMetaData.value
+    ) {
+      // Update the profile infos in local storage
+      return profileMetaData.value.LSP3Profile;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('ProfileContext: could not fetch profile data: ', error);
+    return null;
   }
 }
