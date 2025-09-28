@@ -116,13 +116,13 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-between px-16 pb-4">
+    <main className="flex flex-col px-16 pb-4">
       <div className="my-2 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
         {/* Banner section for announcement of the announcement of the announcement */}
       </div>
 
       <div className="rounded-lg border border-red-100 p-5 bg-beige-soil">
-        <div className="grid text-center align-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-2 lg:text-left">
+        <div className="grid text-center align-center lg:w-full lg:mb-0 lg:grid-cols-2 lg:text-left">
           <HoverVideo
             imageSrc="/potato-tipper-chilling.webp"
             videoSrc="/potato-character-fun-video.mp4"
@@ -136,12 +136,12 @@ export default function Home() {
 
       <div className="rounded-lg border border-red-100 p-5 bg-beige-soil mt-4">
         <h2 className="text-2xl m-5">Setup the POTATO Tipper</h2>
-        <div className="mb-32 grid text-left lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
+        <div className="mb-32 grid text-left lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
           <div>
             <Box
               emoji="1️⃣"
               title="Update your UP permissions"
-              text="This is required so that you can connect the POTATO Tipper to your Universal Profile"
+              text="This is required to be able to connect the POTATO Tipper to your 🆙"
               onClick={() => setIsPermissionsModalOpen(true)}
             />
             <div>
@@ -154,7 +154,7 @@ export default function Home() {
           <div>
             <Box
               emoji="4️⃣"
-              title="Authorize the Tipper to spend"
+              title="Authorize to spend"
               text="Set up to how many tokens the tipper can distribute on your behalf. This amount should be topped up regularly."
               onClick={authorizePotatoTipperAsOperator}
             />

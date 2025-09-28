@@ -81,23 +81,26 @@ const ConnectPotatoTipper: React.FC = () => {
         <label className="block mb-2 text-sm text-gray-900">
           Connected address:
         </label>
-        {address && isConnectedLSP1DelegateLoaded && (
-          <p>
-            <a
-              href={`${SUPPORTED_NETWORKS[0].explorer}/address/${connectedLSP1Delegate}`}
-              target="_blank"
-            >
-              <code>{connectedLSP1Delegate}</code>
-            </a>
-          </p>
-        )}
         {address && isFetching && <p>Loading...'</p>}
-        <p>
-          {' '}
-          {connectedLSP1Delegate === POTATO_TIPPER_ADDRESS
-            ? '✅ POTATO Tipper connected to 🆙'
-            : '❌ POTATO Tipper not connected to 🆙'}
-        </p>
+        {address && isConnectedLSP1DelegateLoaded && (
+          <>
+            <p className="text-sm mb-2">
+              <a
+                href={`${SUPPORTED_NETWORKS[0].explorer}/address/${connectedLSP1Delegate}`}
+                target="_blank"
+              >
+                <code>{connectedLSP1Delegate}</code>
+              </a>
+            </p>
+            <p className="text-sm mb-2">
+              {' '}
+              {connectedLSP1Delegate === POTATO_TIPPER_ADDRESS
+                ? '✅ POTATO Tipper connected to 🆙'
+                : '❌ POTATO Tipper not connected to 🆙'}
+            </p>
+          </>
+        )}
+
         <Button
           text="🔌☑️ Connect POTATO Tipper"
           onClick={connectPotatoTipper}

@@ -1,6 +1,6 @@
 import { encodeDataKeysValuesForTipAmount } from '@/utils';
 import { universalProfileAbi } from '@lukso/lsp-smart-contracts/abi';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   useAccount,
@@ -10,13 +10,18 @@ import {
 } from 'wagmi';
 import Box from '../Box';
 import Button from '../Button/Button';
-import { formatUnits, hexToBigInt } from 'viem';
+import { formatUnits, fromHex, hexToBigInt, parseUnits, toHex } from 'viem';
 
 const SetupTipAmount: React.FC = () => {
   const { address } = useAccount();
 
-  const { tipAmountDataKey, tipAmountDataValue } =
-    encodeDataKeysValuesForTipAmount();
+  const [configuredTipAmount, setConfiguredTipAmount] = useState<bigint | null>(
+    null
+  );
+
+  // TODO: let erc725.js encode the value from bigint to uint256 hex
+  // and let React state deal with numbers.
+  const { tipAmountDataKey } = encodeDataKeysValuesForTipAmount();
 
   const { data: currentTipAmount, refetch } = useReadContract({
     abi: universalProfileAbi,
@@ -36,6 +41,11 @@ const SetupTipAmount: React.FC = () => {
   }, [txConfirmed, refetch]);
 
   function setupTipAmount() {
+    if (configuredTipAmount === null) {
+      console.error('Please enter a valid tip amount.');
+      return;
+    }
+
     if (!address) {
       console.error('No wallet address found. Please connect your wallet.');
       return;
@@ -45,17 +55,18 @@ const SetupTipAmount: React.FC = () => {
       abi: universalProfileAbi,
       address,
       functionName: 'setData',
-      // Example: tip 42 $POTATOs
-      args: [tipAmountDataKey, tipAmountDataValue],
+      args: [tipAmountDataKey, toHex(configuredTipAmount)],
     });
   }
 
   return (
     <div>
       <Box
-        emoji="3️⃣"
+        emoji={
+          currentTipAmount && hexToBigInt(currentTipAmount) > 0 ? '✅' : '3️⃣'
+        }
         title="Setup the tip amount"
-        text="Choose how many 🥔 tokens you want to tip your new followers. This amount is saved in your Universal Profile's metadata."
+        text="Choose how many 🥔 tokens you want to tip your new followers. This amount is saved in your Universal Profile."
         onClick={setupTipAmount}
       />
       <div className="mx-5">
@@ -73,9 +84,15 @@ const SetupTipAmount: React.FC = () => {
           type="number"
           id="number-input"
           aria-describedby="helper-text-explanation"
-          className="bg-gray-100 space-x-2 px-4 py-2 shadow-md border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          className="bg-[#4a7c59] space-x-2 px-4 py-2 shadow-md border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           placeholder="90210"
           required
+          onChange={(e) => {
+            const value = e.target.value;
+            const valueInWei = parseUnits(value, 18);
+            console.log('valueInWei', valueInWei);
+            setConfiguredTipAmount(valueInWei);
+          }}
         />
         <Button
           text="🥔 Modify Tip Amount"
