@@ -31,8 +31,8 @@ const erc725js = new ERC725([...LSP1Schema, POTATO_TIP_AMOUNT_DATA_KEY_SCHEMA]);
 
 /// @dev encode data key for LSP1UniversalReceiverDelegate:<new-follower> type ID
 export function getLSP1DelegataDataKeyValues(): {
-  lsp1DelegateKey: `0x${string}`;
-  lsp1DelegateValue: `0x${string}`;
+  lsp1DelegateDataKey: `0x${string}`;
+  lsp1DelegateDataValue: `0x${string}`;
 } {
   const {
     keys: [key],
@@ -43,14 +43,17 @@ export function getLSP1DelegataDataKeyValues(): {
     value: POTATO_TIPPER_ADDRESS,
   });
 
-  const lsp1DelegateKey = key as `0x${string}`;
-  const lsp1DelegateValue = value as `0x${string}`;
+  const lsp1DelegateDataKey = key as `0x${string}`;
+  const lsp1DelegateDataValue = value as `0x${string}`;
 
-  return { lsp1DelegateKey, lsp1DelegateValue };
+  return { lsp1DelegateDataKey, lsp1DelegateDataValue };
 }
 
 /// @dev encode data key / value where we will store the POTATO Tip amount
-export function encodeDataKeysValuesForTipAmount() {
+export function encodeDataKeysValuesForTipAmount(): {
+  tipAmountDataKey: `0x${string}`;
+  tipAmountDataValue: `0x${string}`;
+} {
   const {
     keys: [key],
     values: [value],
@@ -59,7 +62,10 @@ export function encodeDataKeysValuesForTipAmount() {
     value: POTATO_TIP_AMOUNT_DEFAULT,
   });
 
-  return { key, value };
+  const tipAmountDataKey = key as `0x${string}`;
+  const tipAmountDataValue = value as `0x${string}`;
+
+  return { tipAmountDataKey, tipAmountDataValue };
 }
 
 export async function isUniversalProfile(address: string): Promise<boolean> {

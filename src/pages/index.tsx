@@ -29,6 +29,7 @@ import {
 } from '@/constants';
 import HoverVideo from '@/components/HoverVideo';
 import ConnectPotatoTipper from '@/components/ConnectPotatoTipper';
+import SetupTipAmount from '@/components/SetupTipAmount';
 
 /**
  * Displays the contents of the landing page within the app.
@@ -61,22 +62,6 @@ export default function Home() {
   // Step 1: Connect POTATO Tipper
 
   // Step 2: Setup tip amount
-  const setupTipAmount = () => {
-    if (!address) {
-      console.error('No wallet address found. Please connect your wallet.');
-      return;
-    }
-
-    const { key, value } = encodeDataKeysValuesForTipAmount();
-
-    writeContract({
-      abi: universalProfileAbi,
-      address,
-      functionName: 'setData',
-      // Example: tip 42 $POTATOs
-      args: [key as `0x${string}`, value as `0x${string}`],
-    });
-  };
 
   // Step 3: Authorize POTATO Tipper contract as operator
   const authorizePotatoTipperAsOperator = () => {
@@ -165,27 +150,7 @@ export default function Home() {
             </div>
           </div>
           <ConnectPotatoTipper />
-          <div>
-            <Box
-              emoji="3️⃣"
-              title="Setup the tip amount"
-              text="Choose how many 🥔 tokens you want to tip your new followers. This amount is saved in your Universal Profile's metadata."
-              onClick={setupTipAmount}
-            />
-            <div className="mx-5">
-              <label className="block mb-2 text-sm text-gray-900">
-                Tip amount:
-              </label>
-              <input
-                type="number"
-                id="number-input"
-                aria-describedby="helper-text-explanation"
-                className="bg-gray-100 space-x-2 px-4 py-2 shadow-md border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="90210"
-                required
-              />
-            </div>
-          </div>
+          <SetupTipAmount />
           <div>
             <Box
               emoji="4️⃣"

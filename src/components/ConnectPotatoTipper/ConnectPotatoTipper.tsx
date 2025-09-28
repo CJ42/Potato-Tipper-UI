@@ -9,11 +9,13 @@ import { getLSP1DelegataDataKeyValues } from '@/utils';
 import { universalProfileAbi } from '@lukso/lsp-smart-contracts/abi';
 import { POTATO_TIPPER_ADDRESS, SUPPORTED_NETWORKS } from '@/constants';
 import Box from '../Box';
+import Button from '../Button';
 
 const ConnectPotatoTipper: React.FC = () => {
   const { address } = useAccount();
 
-  const { lsp1DelegateKey, lsp1DelegateValue } = getLSP1DelegataDataKeyValues();
+  const { lsp1DelegateDataKey, lsp1DelegateDataValue } =
+    getLSP1DelegataDataKeyValues();
 
   const {
     data: connectedLSP1Delegate,
@@ -24,15 +26,14 @@ const ConnectPotatoTipper: React.FC = () => {
     abi: universalProfileAbi,
     address: address,
     functionName: 'getData',
-    args: [lsp1DelegateKey],
+    args: [lsp1DelegateDataKey],
   });
 
   const { data: connectPotatoTipperTxHash, writeContract } = useWriteContract();
 
-  const { isSuccess: txConfirmed, isPending: isConnectingPotatoTipper } =
-    useWaitForTransactionReceipt({
-      hash: connectPotatoTipperTxHash,
-    });
+  const { isSuccess: txConfirmed } = useWaitForTransactionReceipt({
+    hash: connectPotatoTipperTxHash,
+  });
 
   useEffect(() => {
     if (txConfirmed) refetch();
@@ -48,7 +49,7 @@ const ConnectPotatoTipper: React.FC = () => {
       abi: universalProfileAbi,
       address,
       functionName: 'setData',
-      args: [lsp1DelegateKey, lsp1DelegateValue],
+      args: [lsp1DelegateDataKey, lsp1DelegateDataValue],
     });
   }
 
@@ -62,7 +63,7 @@ const ConnectPotatoTipper: React.FC = () => {
       abi: universalProfileAbi,
       address,
       functionName: 'setData',
-      args: [lsp1DelegateKey, '0x'],
+      args: [lsp1DelegateDataKey, '0x'],
     });
   }
 
@@ -97,21 +98,16 @@ const ConnectPotatoTipper: React.FC = () => {
             ? '✅ POTATO Tipper connected to 🆙'
             : '❌ POTATO Tipper not connected to 🆙'}
         </p>
-        <button
-          type="button"
-          className="m-2 bg-green-garden text-white font-bold py-2 px-4 rounded"
+        <Button
+          text="🔌☑️ Connect POTATO Tipper"
           onClick={connectPotatoTipper}
-        >
-          🔌☑️ Connect POTATO Tipper
-        </button>
-        <button
-          type="button"
-          className="m-2 bg-red-error text-white font-bold py-2 px-4 rounded"
+          bgClass="bg-green-garden"
+        />
+        <Button
+          text="🔌❌ Disconnect POTATO Tipper"
           onClick={disconnectPotatoTipper}
-        >
-          🔌❌ Disconnect POTATO Tipper
-        </button>
-        {/* TODO: allow to disconnect if connected */}
+          bgClass="bg-red-error"
+        />
       </div>
     </div>
   );
