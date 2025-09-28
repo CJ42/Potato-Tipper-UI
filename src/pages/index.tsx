@@ -152,71 +152,62 @@ export default function Home() {
       <div className="rounded-lg border border-red-100 p-5 bg-beige-soil mt-4">
         <h2 className="text-2xl m-5">Setup the POTATO Tipper</h2>
         <div className="mb-32 grid text-left lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-          <Box
-            emoji="1️⃣"
-            title="Update your UP permissions"
-            text="This is required so that you can connect the POTATO Tipper to your Universal Profile"
-            onClick={() => setIsPermissionsModalOpen(true)}
-          />
-          <Box
-            // TODO: move this to other component `ConnectPotatoTipper`, with `<Box />` component above
-            // emoji={
-            //   connectedLSP1Delegate === POTATO_TIPPER_ADDRESS ? '✅' : '2️⃣'
-            // }
-            emoji="2️⃣"
-            title="Connect the POTATO Tipper"
-            text="Connect the POTATO Tipper contract to your Universal Profile. It will react when you receive new followers 📢."
-            // onClick={connectPotatoTipper}
-          />
-          <Box
-            emoji="3️⃣"
-            title="Setup the tip amount"
-            text="Choose how many 🥔 tokens you want to tip your new followers. This amount is saved in your Universal Profile's metadata."
-            onClick={setupTipAmount}
-          />
-          <Box
-            emoji="4️⃣"
-            title="Authorize the Tipper to spend"
-            text="Set up to how many tokens the tipper can distribute on your behalf. This amount should be topped up regularly."
-            onClick={authorizePotatoTipperAsOperator}
-          />
-          <div ref={confettiContainerRef} className="confetti-container"></div>
-        </div>
-        <div className="mb-32 grid text-left lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
           <div>
-            Permissions:{' '}
-            {/* TODO: add CHECK if UP Browser Extension Main Controller has enough permissions*/}{' '}
+            <Box
+              emoji="1️⃣"
+              title="Update your UP permissions"
+              text="This is required so that you can connect the POTATO Tipper to your Universal Profile"
+              onClick={() => setIsPermissionsModalOpen(true)}
+            />
+            <div>
+              Permissions:{' '}
+              {/* TODO: add CHECK if UP Browser Extension Main Controller has enough permissions*/}{' '}
+            </div>
           </div>
-
-          {/* TODO: add component to connect POTATO Tipper */}
           <ConnectPotatoTipper />
-
-          <div className="mx-5">
-            <label className="block mb-2 text-sm text-gray-900">
-              Tip amount:
-            </label>
-            <input
-              type="number"
-              id="number-input"
-              aria-describedby="helper-text-explanation"
-              className="bg-gray-100 space-x-2 px-4 py-2 shadow-md border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="90210"
-              required
+          <div>
+            <Box
+              emoji="3️⃣"
+              title="Setup the tip amount"
+              text="Choose how many 🥔 tokens you want to tip your new followers. This amount is saved in your Universal Profile's metadata."
+              onClick={setupTipAmount}
             />
+            <div className="mx-5">
+              <label className="block mb-2 text-sm text-gray-900">
+                Tip amount:
+              </label>
+              <input
+                type="number"
+                id="number-input"
+                aria-describedby="helper-text-explanation"
+                className="bg-gray-100 space-x-2 px-4 py-2 shadow-md border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                placeholder="90210"
+                required
+              />
+            </div>
           </div>
-          <div className="mx-5">
-            <label className="block mb-2 text-sm text-gray-900">
-              Allocated amount:
-            </label>
-            <input
-              type="number"
-              id="number-input"
-              aria-describedby="helper-text-explanation"
-              className="bg-[#4a7c59] border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="90210"
-              required
+          <div>
+            <Box
+              emoji="4️⃣"
+              title="Authorize the Tipper to spend"
+              text="Set up to how many tokens the tipper can distribute on your behalf. This amount should be topped up regularly."
+              onClick={authorizePotatoTipperAsOperator}
             />
+            <div className="mx-5">
+              <label className="block mb-2 text-sm text-gray-900">
+                Allocated amount:
+              </label>
+              <input
+                type="number"
+                id="number-input"
+                aria-describedby="helper-text-explanation"
+                className="bg-[#4a7c59] border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                placeholder="90210"
+                required
+              />
+            </div>
           </div>
+          <div ref={confettiContainerRef} className="confetti-container"></div>
         </div>
         <div className="mt-10 text-center">
           <Box
