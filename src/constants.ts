@@ -23,9 +23,12 @@ export const SUPPORTED_NETWORKS: Network[] = [
   },
 ];
 
+// TODO: add the one for testnet too for testing purpose before going to production
+// export const POTATO_TOKEN_ADDRESS =
+//   '0x4C3e98829Eeff226526Ae4a492D054AA683eC0CE';
 export const POTATO_TOKEN_ADDRESS =
-  '0x4C3e98829Eeff226526Ae4a492D054AA683eC0CE';
+  '0x80D898C5A3A0B118a0c8C8aDcdBB260FC687F1ce';
 export const POTATO_TIPPER_ADDRESS =
   '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-export const POTATO_TIPPER_AUTHORIZE_AMOUNT_DEFAULT = parseUnits('1000000', 18);
+
 export const POTATO_TIP_AMOUNT_DEFAULT = parseUnits('42', 18);

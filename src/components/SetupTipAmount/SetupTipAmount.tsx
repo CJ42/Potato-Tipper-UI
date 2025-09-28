@@ -10,7 +10,7 @@ import {
 } from 'wagmi';
 import Box from '../Box';
 import Button from '../Button/Button';
-import { formatUnits, fromHex, hexToBigInt, parseUnits, toHex } from 'viem';
+import { formatUnits, hexToBigInt, parseUnits, toHex } from 'viem';
 
 const SetupTipAmount: React.FC = () => {
   const { address } = useAccount();
@@ -63,17 +63,22 @@ const SetupTipAmount: React.FC = () => {
     <div>
       <Box
         emoji={
-          currentTipAmount && hexToBigInt(currentTipAmount) > 0 ? '✅' : '3️⃣'
+          currentTipAmount &&
+            currentTipAmount != '0x' &&
+            hexToBigInt(currentTipAmount) > 0
+            ? '✅'
+            : '3️⃣'
         }
         title="Setup the tip amount"
         text="Choose how many 🥔 tokens you want to tip your new followers. This amount is saved in your Universal Profile."
-        onClick={setupTipAmount}
       />
       <div className="mx-5">
         <div className="mb-2 ">
           <label className="mr-2 text-sm text-gray-900">Current amount:</label>
           <code>
-            {currentTipAmount && formatUnits(hexToBigInt(currentTipAmount), 18)}{' '}
+            {currentTipAmount !== undefined && currentTipAmount != '0x'
+              ? formatUnits(hexToBigInt(currentTipAmount), 18)
+              : '0'}{' '}
             🥔
           </code>
         </div>
@@ -82,22 +87,19 @@ const SetupTipAmount: React.FC = () => {
         </label>
         <input
           type="number"
-          id="number-input"
-          aria-describedby="helper-text-explanation"
           className="bg-[#4a7c59] space-x-2 px-4 py-2 shadow-md border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          placeholder="90210"
           required
           onChange={(e) => {
             const value = e.target.value;
             const valueInWei = parseUnits(value, 18);
-            console.log('valueInWei', valueInWei);
+            console.log('tip amount in wei', valueInWei);
             setConfiguredTipAmount(valueInWei);
           }}
         />
         <Button
           text="🥔 Modify Tip Amount"
           onClick={setupTipAmount}
-          bgClass="bg-blue-500"
+          bgClass="bg-blue-500 hover:bg-blue-700"
         />
       </div>
     </div>

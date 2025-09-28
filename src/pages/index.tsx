@@ -2,23 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import { useAccount, useWriteContract } from 'wagmi';
 import { useAccountModal } from '@rainbow-me/rainbowkit';
 
-// import PotatoTipperNotSetImage from '@/public/images/potato-tipper-not-set.webp';
-// import PotatoTipperNotSetImage from '../../public/images/potato-tipper-not-set.webp';
-import { lsp7DigitalAssetAbi } from '@lukso/lsp7-contracts/abi';
-
 import CardWithContent from '@/components/CardWithContent/CardWithContent';
 import Modal from '@/components/Modal';
 import Box from '@/components/Box';
-
-import {
-  INSTALL_UP_EXTENSION_URL,
-  POTATO_TIPPER_ADDRESS,
-  POTATO_TIPPER_AUTHORIZE_AMOUNT_DEFAULT,
-  POTATO_TOKEN_ADDRESS,
-} from '@/constants';
 import HoverVideo from '@/components/HoverVideo';
 import ConnectPotatoTipper from '@/components/ConnectPotatoTipper';
 import SetupTipAmount from '@/components/SetupTipAmount';
+
+import { INSTALL_UP_EXTENSION_URL } from '@/constants';
+import AuthorizeToTip from '@/components/AuthorizeToTip';
 
 /**
  * Displays the contents of the landing page within the app.
@@ -43,28 +35,6 @@ export default function Home() {
       setIsEOANotSupportedModalOpen(false);
     }
   }, [connector]);
-
-  // ----- POTATO Tipper Connection Check -----
-
-  const { writeContract } = useWriteContract();
-
-  // Step 1: Connect POTATO Tipper
-
-  // Step 2: Setup tip amount
-
-  // Step 3: Authorize POTATO Tipper contract as operator
-  const authorizePotatoTipperAsOperator = () => {
-    writeContract({
-      abi: lsp7DigitalAssetAbi,
-      address: POTATO_TOKEN_ADDRESS,
-      functionName: 'authorizeOperator',
-      args: [
-        POTATO_TIPPER_ADDRESS,
-        POTATO_TIPPER_AUTHORIZE_AMOUNT_DEFAULT,
-        '0x',
-      ],
-    });
-  };
 
   const confettiContainerRef = useRef<HTMLDivElement | null>(null);
   const generateConfetti = () => {
@@ -140,28 +110,7 @@ export default function Home() {
           </div>
           <ConnectPotatoTipper />
           <SetupTipAmount />
-          <div>
-            <Box
-              emoji="4️⃣"
-              title="Authorize to spend"
-              text="Set up to how many tokens the tipper can distribute on your behalf. This amount should be topped up regularly."
-              onClick={authorizePotatoTipperAsOperator}
-            />
-            <div className="mx-5">
-              <label className="block mb-2 text-sm text-gray-900">
-                Allocated amount:
-              </label>
-              <input
-                type="number"
-                id="number-input"
-                aria-describedby="helper-text-explanation"
-                className="bg-[#4a7c59] border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="90210"
-                required
-              />
-            </div>
-          </div>
-          <div ref={confettiContainerRef} className="confetti-container"></div>
+          <AuthorizeToTip />
         </div>
         <div className="mt-10 text-center">
           <Box
@@ -171,6 +120,7 @@ export default function Home() {
             onClick={generateConfetti}
           />
         </div>
+        <div ref={confettiContainerRef} className="confetti-container"></div>
       </div>
 
       {/* Modal for UP permissions setup */}
@@ -273,7 +223,7 @@ export default function Home() {
         title="EOA Wallet not supported"
         isOpen={isEOANotSupportedModalOpen}
         // Prevent closing the modal. Only closes once extension connected is Universal Profile
-        onClose={() => { }}
+        onClose={() => {}}
         closeDisable={true}
         size={0}
       >
