@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { useAccount, useReadContract, useWriteContract } from 'wagmi';
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from 'wagmi';
 import { useAccountModal } from '@rainbow-me/rainbowkit';
 
 // import PotatoTipperNotSetImage from '@/public/images/potato-tipper-not-set.webp';
@@ -23,29 +28,24 @@ import {
   SUPPORTED_NETWORKS,
 } from '@/constants';
 import HoverVideo from '@/components/HoverVideo';
+import ConnectPotatoTipper from '@/components/ConnectPotatoTipper';
 
 /**
  * Displays the contents of the landing page within the app.
  */
 export default function Home() {
+  // Other state
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
+
+  // ----- Only UP Browser Extension Check -----
   const { address, connector } = useAccount();
   const { openAccountModal } = useAccountModal();
-  const { writeContract } = useWriteContract();
+  const [isEOANotSupportedModalOpen, setIsEOANotSupportedModalOpen] =
+    useState(false);
 
   console.log('%c openAccountModal:', 'color: #FE005B', openAccountModal);
   console.log('%c useAccount connector:', 'color: #FE005B', connector);
 
-  // Modal state
-  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
-  const [isEOANotSupportedModalOpen, setIsEOANotSupportedModalOpen] =
-    useState(false);
-
-  const [
-    connectedLSP1DelegateToReactOnFollow,
-    setConnectedLSP1DelegateToReactOnFollow,
-  ] = useState('');
-
-  // ----- Only UP Browser Extension Check -----
   useEffect(() => {
     if (connector && connector.id !== 'cloud.universalprofile') {
       setIsEOANotSupportedModalOpen(true);
@@ -56,41 +56,9 @@ export default function Home() {
 
   // ----- POTATO Tipper Connection Check -----
 
-  // Step 1: Check if POTATO Tipper is connected. If not allow to connect it
-  const { lsp1DelegateKey, lsp1DelegateValue } = getLSP1DelegataDataKeyValues();
+  const { writeContract } = useWriteContract();
 
-  // TODO: create as a function isPotatoTipperConnected(address) to reuse it and embed the useReadContract inside maybe?
-  const potatoTipperData = useReadContract({
-    abi: universalProfileAbi,
-    address: address,
-    functionName: 'getData',
-    args: [lsp1DelegateKey as `0x${string}`],
-    query: {
-      enabled: !!address, // Only run when address is available
-    },
-  });
-
-  useEffect(() => {
-    const connectedLSP1Delegate = potatoTipperData.data;
-    console.log('connectedLSP1Delegate', connectedLSP1Delegate);
-    setConnectedLSP1DelegateToReactOnFollow(connectedLSP1Delegate);
-  }, [potatoTipperData]);
-
-  // Connect Potato Tipper
-  // TODO: debug transaction reverting
-  const connectPotatoTipper = () => {
-    if (!address) {
-      console.error('No wallet address found. Please connect your wallet.');
-      return;
-    }
-
-    writeContract({
-      abi: universalProfileAbi,
-      address,
-      functionName: 'setData',
-      args: [lsp1DelegateKey, lsp1DelegateValue],
-    });
-  };
+  // Step 1: Connect POTATO Tipper
 
   // Step 2: Setup tip amount
   const setupTipAmount = () => {
@@ -191,14 +159,14 @@ export default function Home() {
             onClick={() => setIsPermissionsModalOpen(true)}
           />
           <Box
-            emoji={
-              connectedLSP1DelegateToReactOnFollow === POTATO_TIPPER_ADDRESS
-                ? '✅'
-                : '2️⃣'
-            }
+            // TODO: move this to other component `ConnectPotatoTipper`, with `<Box />` component above
+            // emoji={
+            //   connectedLSP1Delegate === POTATO_TIPPER_ADDRESS ? '✅' : '2️⃣'
+            // }
+            emoji="2️⃣"
             title="Connect the POTATO Tipper"
             text="Connect the POTATO Tipper contract to your Universal Profile. It will react when you receive new followers 📢."
-            onClick={connectPotatoTipper}
+            // onClick={connectPotatoTipper}
           />
           <Box
             emoji="3️⃣"
@@ -219,38 +187,10 @@ export default function Home() {
             Permissions:{' '}
             {/* TODO: add CHECK if UP Browser Extension Main Controller has enough permissions*/}{' '}
           </div>
-          <div className="mx-5">
-            <label className="block mb-2 text-sm text-gray-900">
-              Connected address:
-            </label>
-            {address && potatoTipperData.status === 'success' && (
-              <p>
-                <a
-                  href={`${SUPPORTED_NETWORKS[0].explorer}/address/${connectedLSP1DelegateToReactOnFollow}`}
-                  target="_blank"
-                >
-                  <code>{connectedLSP1DelegateToReactOnFollow}</code>
-                </a>
-              </p>
-            )}
-            {address && potatoTipperData.status === 'pending' && (
-              <p>Loading...'</p>
-            )}
-            <p>
-              {' '}
-              {connectedLSP1DelegateToReactOnFollow === POTATO_TIPPER_ADDRESS
-                ? '✅ POTATO Tipper connected to 🆙'
-                : '❌ POTATO Tipper not connected to 🆙'}
-            </p>
-            <button
-              type="button"
-              className="m-2 bg-green-garden text-white font-bold py-2 px-4 rounded"
-              onClick={connectPotatoTipper}
-            >
-              Connect POTATO Tipper
-            </button>
-            {/* TODO: allow to disconnect if connected */}
-          </div>
+
+          {/* TODO: add component to connect POTATO Tipper */}
+          <ConnectPotatoTipper />
+
           <div className="mx-5">
             <label className="block mb-2 text-sm text-gray-900">
               Tip amount:
