@@ -38,7 +38,8 @@ const HoverVideo: React.FC<HoverVideoProps> = ({
 
   return (
     <div
-      className="relative group cursor-pointer"
+      className="relative group cursor-pointer w-full"
+      style={{ height: height + 'px' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -55,7 +56,7 @@ const HoverVideo: React.FC<HoverVideoProps> = ({
         width={parseInt(width)}
         height={parseInt(height)}
         alt={alt}
-        className={`transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
+        className={`w-full h-full object-cover rounded-lg transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
       />
 
       {/* Video Overlay */}

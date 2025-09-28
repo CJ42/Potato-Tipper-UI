@@ -1,31 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  useAccount,
-  useReadContract,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from 'wagmi';
+import { useAccount, useWriteContract } from 'wagmi';
 import { useAccountModal } from '@rainbow-me/rainbowkit';
 
 // import PotatoTipperNotSetImage from '@/public/images/potato-tipper-not-set.webp';
 // import PotatoTipperNotSetImage from '../../public/images/potato-tipper-not-set.webp';
 import { lsp7DigitalAssetAbi } from '@lukso/lsp7-contracts/abi';
-import { universalProfileAbi } from '@lukso/universalprofile-contracts/abi';
 
 import CardWithContent from '@/components/CardWithContent/CardWithContent';
 import Modal from '@/components/Modal';
 import Box from '@/components/Box';
 
 import {
-  getLSP1DelegataDataKeyValues,
-  encodeDataKeysValuesForTipAmount,
-} from '@/utils';
-import {
   INSTALL_UP_EXTENSION_URL,
   POTATO_TIPPER_ADDRESS,
   POTATO_TIPPER_AUTHORIZE_AMOUNT_DEFAULT,
   POTATO_TOKEN_ADDRESS,
-  SUPPORTED_NETWORKS,
 } from '@/constants';
 import HoverVideo from '@/components/HoverVideo';
 import ConnectPotatoTipper from '@/components/ConnectPotatoTipper';
@@ -284,7 +273,7 @@ export default function Home() {
         title="EOA Wallet not supported"
         isOpen={isEOANotSupportedModalOpen}
         // Prevent closing the modal. Only closes once extension connected is Universal Profile
-        onClose={() => {}}
+        onClose={() => { }}
         closeDisable={true}
         size={0}
       >
